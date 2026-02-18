@@ -1,0 +1,149 @@
+<Window x:Class="MSNClient.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MSN Messenger" Height="520" Width="380"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#EEF4FB"
+        FontFamily="Tahoma">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="110"/>   <!-- Header -->
+            <RowDefinition Height="*"/>     <!-- Content -->
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource MSNHeaderBrush}">
+            <Grid Margin="16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="msn" FontWeight="Bold" FontSize="26" Foreground="White" FontFamily="Arial"/>
+                        <TextBlock Text="™" FontSize="10" Foreground="#CCDDFF" VerticalAlignment="Top" Margin="2,4,0,0"/>
+                    </StackPanel>
+                    <TextBlock Text="Messenger" FontSize="18" Foreground="#DDEEFF" FontFamily="Arial" Margin="0,-4,0,0"/>
+                </StackPanel>
+                <TextBlock Grid.Column="1" Text="💬" FontSize="48" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Main content with tabs -->
+        <Grid Grid.Row="1" Margin="0">
+            <TabControl x:Name="MainTabs" BorderThickness="0" Background="Transparent">
+                <TabControl.Resources>
+                    <Style TargetType="TabItem">
+                        <Setter Property="FontFamily" Value="Tahoma"/>
+                        <Setter Property="FontSize" Value="11"/>
+                        <Setter Property="Padding" Value="12,4"/>
+                    </Style>
+                </TabControl.Resources>
+
+                <!-- Sign In Tab -->
+                <TabItem Header="Sign In">
+                    <StackPanel Margin="20,16">
+                        <!-- Server section -->
+                        <Border Background="#E0ECF8" BorderBrush="#8CB4E0" BorderThickness="1"
+                                CornerRadius="3" Padding="10,8" Margin="0,0,0,14">
+                            <StackPanel>
+                                <TextBlock Text="🖥️  Server Connection" FontWeight="Bold" FontSize="11"
+                                           Foreground="#003399" Margin="0,0,0,8"/>
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="70"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="HostBox" Style="{StaticResource TextBoxStyle}"
+                                             Text="localhost" ToolTip="Server hostname or IP address"/>
+                                    <TextBlock Grid.Column="1" Text=":" VerticalAlignment="Center" Margin="4,0"/>
+                                    <TextBox x:Name="PortBox" Style="{StaticResource TextBoxStyle}"
+                                             Grid.Column="2" Text="443"/>
+                                </Grid>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Style="{StaticResource MSNBtn}" Content="🔍 Find LAN Servers"
+                                            Click="FindServers_Click" Padding="6,3" FontSize="10"/>
+                                    <TextBlock x:Name="ConnectionStatus" Text="" FontSize="10"
+                                               Foreground="#555555" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                </StackPanel>
+                                <!-- LAN servers list -->
+                                <ListBox x:Name="ServerList" Margin="0,6,0,0" MaxHeight="80"
+                                         Visibility="Collapsed" FontSize="10" BorderBrush="#8CB4E0"
+                                         SelectionChanged="ServerList_SelectionChanged"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Credentials -->
+                        <TextBlock Text="Username:" FontSize="11" Margin="0,0,0,3"/>
+                        <TextBox x:Name="UsernameBox" Style="{StaticResource TextBoxStyle}"
+                                 Height="26" Margin="0,0,0,8"/>
+
+                        <TextBlock Text="Password:" FontSize="11" Margin="0,0,0,3"/>
+                        <PasswordBox x:Name="PasswordBox" Style="{StaticResource PasswordBoxStyle}"
+                                     Height="26" Margin="0,0,0,8"
+                                     KeyDown="PasswordBox_KeyDown"/>
+
+                        <!-- Status -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <TextBlock Text="Sign in as:" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <ComboBox x:Name="StatusCombo" FontSize="11" Width="140">
+                                <ComboBoxItem Content="🟢  Online" Tag="Online" IsSelected="True"/>
+                                <ComboBoxItem Content="🟡  Away" Tag="Away"/>
+                                <ComboBoxItem Content="🔴  Busy" Tag="Busy"/>
+                                <ComboBoxItem Content="👻  Appear Offline" Tag="AppearOffline"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <TextBlock x:Name="LoginError" Text="" Foreground="Red" FontSize="10"
+                                   TextWrapping="Wrap" Margin="0,0,0,6" Visibility="Collapsed"/>
+
+                        <Button Style="{StaticResource MSNBtnPrimary}" Content="Sign In"
+                                Height="32" Click="SignIn_Click"/>
+                    </StackPanel>
+                </TabItem>
+
+                <!-- Register Tab -->
+                <TabItem Header="Create Account">
+                    <StackPanel Margin="20,16">
+                        <TextBlock Text="Create a new MSN account" FontSize="12" FontWeight="Bold"
+                                   Foreground="#003399" Margin="0,0,0,14"/>
+
+                        <TextBlock Text="Username:" FontSize="11" Margin="0,0,0,3"/>
+                        <TextBox x:Name="RegUsernameBox" Style="{StaticResource TextBoxStyle}"
+                                 Height="26" Margin="0,0,0,8"/>
+
+                        <TextBlock Text="Display Name:" FontSize="11" Margin="0,0,0,3"/>
+                        <TextBox x:Name="RegDisplayBox" Style="{StaticResource TextBoxStyle}"
+                                 Height="26" Margin="0,0,0,8"/>
+
+                        <TextBlock Text="Email (optional):" FontSize="11" Margin="0,0,0,3"/>
+                        <TextBox x:Name="RegEmailBox" Style="{StaticResource TextBoxStyle}"
+                                 Height="26" Margin="0,0,0,8"/>
+
+                        <TextBlock Text="Password:" FontSize="11" Margin="0,0,0,3"/>
+                        <PasswordBox x:Name="RegPasswordBox" Style="{StaticResource PasswordBoxStyle}"
+                                     Height="26" Margin="0,0,0,8"/>
+
+                        <TextBlock Text="Confirm Password:" FontSize="11" Margin="0,0,0,3"/>
+                        <PasswordBox x:Name="RegConfirmBox" Style="{StaticResource PasswordBoxStyle}"
+                                     Height="26" Margin="0,0,0,12"/>
+
+                        <TextBlock x:Name="RegError" Text="" Foreground="Red" FontSize="10"
+                                   TextWrapping="Wrap" Margin="0,0,0,6" Visibility="Collapsed"/>
+                        <TextBlock x:Name="RegSuccess" Text="" Foreground="Green" FontSize="10"
+                                   TextWrapping="Wrap" Margin="0,0,0,6" Visibility="Collapsed"/>
+
+                        <Button Style="{StaticResource MSNBtnPrimary}" Content="Create Account"
+                                Height="32" Click="Register_Click"/>
+
+                        <TextBlock Margin="0,12,0,0" FontSize="10" Foreground="#666666"
+                                   Text="ℹ  Make sure you are connected to the server first (set host/port on Sign In tab)."
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</Window>

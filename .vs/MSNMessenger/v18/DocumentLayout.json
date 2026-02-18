@@ -1,0 +1,163 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|c:\\users\\egexx\\downloads\\msnmessenger\\msnclient\\groupchatwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|solutionrelative:msnclient\\groupchatwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|c:\\users\\egexx\\downloads\\msnmessenger\\msnclient\\groupchatwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|solutionrelative:msnclient\\groupchatwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B2C3D4E5-F6A7-8901-BCDE-F12345678901}|MSNServer\\MSNServer.csproj|c:\\users\\egexx\\downloads\\msnmessenger\\msnserver\\msnserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B2C3D4E5-F6A7-8901-BCDE-F12345678901}|MSNServer\\MSNServer.csproj|solutionrelative:msnserver\\msnserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|c:\\users\\egexx\\downloads\\msnmessenger\\msnclient\\chatwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|solutionrelative:msnclient\\chatwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|c:\\users\\egexx\\downloads\\msnmessenger\\msnclient\\dialogs.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|solutionrelative:msnclient\\dialogs.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|c:\\users\\egexx\\downloads\\msnmessenger\\msnclient\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|solutionrelative:msnclient\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|c:\\users\\egexx\\downloads\\msnmessenger\\msnclient\\filetransfermanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}|MSNClient\\MSNClient.csproj|solutionrelative:msnclient\\filetransfermanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B2C3D4E5-F6A7-8901-BCDE-F12345678901}|MSNServer\\MSNServer.csproj|c:\\users\\egexx\\downloads\\msnmessenger\\msnserver\\tttmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B2C3D4E5-F6A7-8901-BCDE-F12345678901}|MSNServer\\MSNServer.csproj|solutionrelative:msnserver\\tttmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 7,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "TttManager.cs",
+              "DocumentMoniker": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNServer\\TttManager.cs",
+              "RelativeDocumentMoniker": "MSNServer\\TttManager.cs",
+              "ToolTip": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNServer\\TttManager.cs",
+              "RelativeToolTip": "MSNServer\\TttManager.cs",
+              "ViewState": "AgIAAH8AAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-18T16:16:37.604Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Dialogs.cs",
+              "DocumentMoniker": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\Dialogs.cs",
+              "RelativeDocumentMoniker": "MSNClient\\Dialogs.cs",
+              "ToolTip": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\Dialogs.cs",
+              "RelativeToolTip": "MSNClient\\Dialogs.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-18T15:57:36.03Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ChatWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\ChatWindow.xaml.cs",
+              "RelativeDocumentMoniker": "MSNClient\\ChatWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\ChatWindow.xaml.cs",
+              "RelativeToolTip": "MSNClient\\ChatWindow.xaml.cs",
+              "ViewState": "AgIAAOkAAAAAAAAAAEBUwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-18T15:57:20.567Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "GroupChatWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\GroupChatWindow.xaml.cs",
+              "RelativeDocumentMoniker": "MSNClient\\GroupChatWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\GroupChatWindow.xaml.cs",
+              "RelativeToolTip": "MSNClient\\GroupChatWindow.xaml.cs",
+              "ViewState": "AgIAAK0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-18T15:56:33.015Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "MSNClient\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\MainWindow.xaml.cs",
+              "RelativeToolTip": "MSNClient\\MainWindow.xaml.cs",
+              "ViewState": "AgIAAMkBAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-18T15:57:43.785Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GroupChatWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\GroupChatWindow.xaml",
+              "RelativeDocumentMoniker": "MSNClient\\GroupChatWindow.xaml",
+              "ToolTip": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\GroupChatWindow.xaml",
+              "RelativeToolTip": "MSNClient\\GroupChatWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-02-18T15:56:58.361Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MsnServer.cs",
+              "DocumentMoniker": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNServer\\MsnServer.cs",
+              "RelativeDocumentMoniker": "MSNServer\\MsnServer.cs",
+              "ToolTip": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNServer\\MsnServer.cs",
+              "RelativeToolTip": "MSNServer\\MsnServer.cs",
+              "ViewState": "AgIAAOwAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-18T15:56:34.277Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "FileTransferManager.cs",
+              "DocumentMoniker": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\FileTransferManager.cs",
+              "RelativeDocumentMoniker": "MSNClient\\FileTransferManager.cs",
+              "ToolTip": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNClient\\FileTransferManager.cs",
+              "RelativeToolTip": "MSNClient\\FileTransferManager.cs",
+              "ViewState": "AgIAALYAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-18T15:58:00.867Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

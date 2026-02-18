@@ -1,0 +1,121 @@
+<Window x:Class="MSNClient.TicTacToeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tic-Tac-Toe" Height="500" Width="420"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#EEF4FB">
+
+    <Window.Resources>
+        <!-- Cell button style -->
+        <Style x:Key="CellBtn" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#6699CC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="FontSize" Value="48"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E0EDFF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Cursor" Value="Arrow"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  <!-- header -->
+            <RowDefinition Height="Auto"/>  <!-- status bar -->
+            <RowDefinition Height="*"/>     <!-- board -->
+            <RowDefinition Height="Auto"/>  <!-- buttons -->
+            <RowDefinition Height="80"/>    <!-- spectators/chat -->
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#2070C0" CornerRadius="6" Padding="10,8" Margin="0,0,0,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <TextBlock x:Name="PlayerXName" Text="Player X" FontWeight="Bold"
+                               Foreground="White" FontSize="13" TextAlignment="Center"/>
+                    <TextBlock Text="✕" FontSize="28" Foreground="#FF6B6B" FontWeight="Bold" TextAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Grid.Column="1" Text="VS" FontSize="20" FontWeight="Bold"
+                           Foreground="#CCDDFF" VerticalAlignment="Center" Margin="12,0"/>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock x:Name="PlayerOName" Text="Player O" FontWeight="Bold"
+                               Foreground="White" FontSize="13" TextAlignment="Center"/>
+                    <TextBlock Text="○" FontSize="28" Foreground="#6BC5FF" FontWeight="Bold" TextAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Status -->
+        <Border Grid.Row="1" Background="#D8E8F8" CornerRadius="4" Padding="8,6" Margin="0,0,0,10">
+            <TextBlock x:Name="StatusText" Text="Waiting for game to start..."
+                       FontSize="13" FontWeight="SemiBold" Foreground="#003399"
+                       TextAlignment="Center"/>
+        </Border>
+
+        <!-- Board -->
+        <Grid Grid.Row="2" Margin="0,0,0,10">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="Cell0" Grid.Row="0" Grid.Column="0" Style="{StaticResource CellBtn}" Margin="3" Click="Cell_Click" Tag="0"/>
+            <Button x:Name="Cell1" Grid.Row="0" Grid.Column="1" Style="{StaticResource CellBtn}" Margin="3" Click="Cell_Click" Tag="1"/>
+            <Button x:Name="Cell2" Grid.Row="0" Grid.Column="2" Style="{StaticResource CellBtn}" Margin="3" Click="Cell_Click" Tag="2"/>
+            <Button x:Name="Cell3" Grid.Row="1" Grid.Column="0" Style="{StaticResource CellBtn}" Margin="3" Click="Cell_Click" Tag="3"/>
+            <Button x:Name="Cell4" Grid.Row="1" Grid.Column="1" Style="{StaticResource CellBtn}" Margin="3" Click="Cell_Click" Tag="4"/>
+            <Button x:Name="Cell5" Grid.Row="1" Grid.Column="2" Style="{StaticResource CellBtn}" Margin="3" Click="Cell_Click" Tag="5"/>
+            <Button x:Name="Cell6" Grid.Row="2" Grid.Column="0" Style="{StaticResource CellBtn}" Margin="3" Click="Cell_Click" Tag="6"/>
+            <Button x:Name="Cell7" Grid.Row="2" Grid.Column="1" Style="{StaticResource CellBtn}" Margin="3" Click="Cell_Click" Tag="7"/>
+            <Button x:Name="Cell8" Grid.Row="2" Grid.Column="2" Style="{StaticResource CellBtn}" Margin="3" Click="Cell_Click" Tag="8"/>
+        </Grid>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
+            <Button x:Name="ResignBtn" Content="🏳 Resign" Padding="16,6" Margin="4,0"
+                    Style="{StaticResource MSNBtn}" Click="Resign_Click"/>
+            <Button x:Name="CloseBtn" Content="✖ Close" Padding="16,6" Margin="4,0"
+                    Style="{StaticResource MSNBtn}" Click="Close_Click"/>
+        </StackPanel>
+
+        <!-- Spectator bar -->
+        <Border Grid.Row="4" Background="#D8E8F8" CornerRadius="4" Padding="8,6">
+            <StackPanel>
+                <TextBlock Text="👁 Spectators:" FontSize="10" Foreground="#555566" FontWeight="SemiBold"/>
+                <TextBlock x:Name="SpectatorList" Text="None" FontSize="10"
+                           Foreground="#334488" TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
