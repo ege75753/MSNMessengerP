@@ -23,6 +23,20 @@ namespace MSNClient
             RefreshMyProfile();
             RebuildContactList();
 
+            // Fetch own profile picture if one exists on the server
+            if (!string.IsNullOrEmpty(_state.MyProfilePicFileId))
+            {
+                _ = Task.Run(async () =>
+                {
+                    var img = await App.FileTransfer.GetProfilePictureAsync(_state.MyUsername);
+                    if (img != null)
+                    {
+                        _state.MyProfilePicture = img;
+                        Dispatcher.Invoke(RefreshMyProfile);
+                    }
+                });
+            }
+
             // Handle incoming contact requests via toast-like popup
         }
 
@@ -132,10 +146,35 @@ namespace MSNClient
                 case PacketType.Nudge:
                     var nd = pkt.GetData<NudgeData>();
                     if (nd is null) break;
-                    if (_state.OpenChats.TryGetValue(nd.From, out var nw))
-                        nw.ReceiveNudge();
+                    if (nd.IsGroup)
+                    {
+                        if (_state.OpenGroupChats.TryGetValue(nd.GroupId, out var gnw))
+                            gnw.ReceiveNudge(nd.From);
+                    }
                     else
-                        OpenOrFocusChat(nd.From, null, nudge: true);
+                    {
+                        if (_state.OpenChats.TryGetValue(nd.From, out var nw))
+                            nw.ReceiveNudge();
+                        else
+                            OpenOrFocusChat(nd.From, null, nudge: true);
+                    }
+                    break;
+
+                case PacketType.StickerSend:
+                    var sd = pkt.GetData<StickerData>();
+                    if (sd is null) break;
+                    if (sd.IsGroup)
+                    {
+                        if (_state.OpenGroupChats.TryGetValue(sd.GroupId, out var gsw))
+                            gsw.ReceiveSticker(sd);
+                    }
+                    else
+                    {
+                        if (_state.OpenChats.TryGetValue(sd.From, out var sw))
+                            sw.ReceiveSticker(sd);
+                        else
+                            OpenOrFocusChat(sd.From, null);
+                    }
                     break;
 
                 case PacketType.CreateGroupAck:
@@ -880,6 +919,32 @@ namespace MSNClient
             MessageBox.Show($"Connected to: {_state.Net.ConnectedHost}:{_state.Net.ConnectedPort}\nUser: {_state.MyUsername}\nContacts: {_state.MyContacts.Count}\nGroups: {_state.Groups.Count}", "Connection Info", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        private void Toolbar_Games(object sender, RoutedEventArgs e)
+        {
+            var menu = new ContextMenu();
+            menu.Items.Add(new MenuItem
+            {
+                Header = "🎨 Gartic",
+                Command = new RelayCommand(() =>
+                {
+                    var lobbyWin = new GarticLobbyWindow { Owner = this };
+                    lobbyWin.Show();
+                })
+            });
+            menu.Items.Add(new MenuItem
+            {
+                Header = "📞 Gartic Phone",
+                Command = new RelayCommand(() =>
+                {
+                    var phoneWin = new GarticPhoneLobbyWindow { Owner = this };
+                    phoneWin.Show();
+                })
+            });
+            menu.PlacementTarget = sender as Button;
+            menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            menu.IsOpen = true;
+        }
+
         private void Menu_File(object sender, RoutedEventArgs e)
         {
             var menu = new ContextMenu();
@@ -900,16 +965,6 @@ namespace MSNClient
         {
             var menu = new ContextMenu();
             menu.Items.Add(new MenuItem { Header = "Change Status", Command = new RelayCommand(() => MyStatus_Click(sender, null!)) });
-            menu.Items.Add(new Separator());
-            menu.Items.Add(new MenuItem
-            {
-                Header = "🎨 Gartic Phone",
-                Command = new RelayCommand(() =>
-            {
-                var lobbyWin = new GarticLobbyWindow { Owner = this };
-                lobbyWin.Show();
-            })
-            });
             menu.IsOpen = true;
         }
 

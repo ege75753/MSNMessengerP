@@ -47,6 +47,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
 
                     <TextBlock Text="Lobby Name:" FontSize="11" VerticalAlignment="Center" Margin="0,0,8,4"/>
@@ -63,6 +64,13 @@
                         <TextBox x:Name="TimeBox" Width="30" Text="60" Style="{StaticResource TextBoxStyle}" Margin="0,0,4,0"/>
                         <TextBlock Text="sec" FontSize="10" VerticalAlignment="Center"/>
                     </StackPanel>
+
+                    <TextBlock Grid.Row="2" Text="Language:" FontSize="11" VerticalAlignment="Center" Margin="0,4,8,0"/>
+                    <ComboBox x:Name="LanguageBox" Grid.Row="2" Grid.Column="1" Width="140" HorizontalAlignment="Left"
+                              Margin="0,4,0,0" SelectedIndex="0">
+                        <ComboBoxItem Content="🇬🇧 English" Tag="en"/>
+                        <ComboBoxItem Content="🇹🇷 Türkçe" Tag="tr"/>
+                    </ComboBox>
                 </Grid>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">

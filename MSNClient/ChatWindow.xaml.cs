@@ -201,7 +201,9 @@ namespace MSNClient
             _isSendingTyping = true;
             await _state.Net.SendAsync(Packet.Create(PacketType.ChatTyping, new TypingData
             {
-                From = _state.MyUsername, To = _contact.Username, IsTyping = true
+                From = _state.MyUsername,
+                To = _contact.Username,
+                IsTyping = true
             }));
 
             _typingDebounce?.Stop();
@@ -212,7 +214,9 @@ namespace MSNClient
                 _isSendingTyping = false;
                 await _state.Net.SendAsync(Packet.Create(PacketType.ChatTyping, new TypingData
                 {
-                    From = _state.MyUsername, To = _contact.Username, IsTyping = false
+                    From = _state.MyUsername,
+                    To = _contact.Username,
+                    IsTyping = false
                 }));
             };
             _typingDebounce.Start();
@@ -272,6 +276,108 @@ namespace MSNClient
             }
             var mi = new MenuItem(); mi.Header = wrap; menu.Items.Add(mi);
             menu.IsOpen = true;
+        }
+
+        private void Sticker_Click(object sender, RoutedEventArgs e)
+        {
+            var menu = new ContextMenu();
+            var stickers = StickerManager.GetAllStickers();
+
+            if (stickers.Count > 0)
+            {
+                var wrap = new WrapPanel { Width = 280 };
+                foreach (var (name, path, base64) in stickers)
+                {
+                    var stickerImg = StickerManager.LoadStickerImage(path);
+                    if (stickerImg == null) continue;
+                    var imgBtn = new Button
+                    {
+                        Width = 64,
+                        Height = 64,
+                        Margin = new Thickness(2),
+                        Background = Brushes.Transparent,
+                        BorderThickness = new Thickness(1),
+                        BorderBrush = new SolidColorBrush(Color.FromRgb(200, 200, 200)),
+                        Cursor = Cursors.Hand,
+                        ToolTip = name,
+                        Content = new Image { Source = stickerImg, Stretch = System.Windows.Media.Stretch.Uniform }
+                    };
+                    var b64 = base64; var n = name;
+                    imgBtn.Click += async (s2, e2) =>
+                    {
+                        menu.IsOpen = false;
+                        AddStickerBubble(_state.MyDisplayName, n, b64, true);
+                        await _state.Net.SendAsync(Packet.Create(PacketType.StickerSend, new StickerData
+                        {
+                            From = _state.MyUsername,
+                            To = _contact.Username,
+                            StickerName = n,
+                            StickerBase64 = b64
+                        }));
+                    };
+                    wrap.Children.Add(imgBtn);
+                }
+                var mi2 = new MenuItem(); mi2.Header = wrap; menu.Items.Add(mi2);
+                menu.Items.Add(new Separator());
+            }
+
+            var createItem = new MenuItem { Header = "➕ Create Sticker..." };
+            createItem.Click += (s2, e2) =>
+            {
+                var dlg = new Microsoft.Win32.OpenFileDialog
+                {
+                    Title = "Select Image for Sticker",
+                    Filter = "Images|*.png;*.jpg;*.jpeg;*.gif;*.bmp"
+                };
+                if (dlg.ShowDialog() != true) return;
+                var name = System.IO.Path.GetFileNameWithoutExtension(dlg.FileName);
+                StickerManager.SaveSticker(name, dlg.FileName);
+                AddSystemMessage($"🏷️ Sticker '{name}' created!");
+            };
+            menu.Items.Add(createItem);
+            menu.IsOpen = true;
+        }
+
+        private void AddStickerBubble(string sender, string stickerName, string base64, bool isMe)
+        {
+            var container = new Border
+            {
+                Background = isMe
+                    ? new SolidColorBrush(Color.FromRgb(220, 235, 255))
+                    : new SolidColorBrush(Color.FromRgb(235, 255, 220)),
+                BorderBrush = new SolidColorBrush(Color.FromRgb(140, 180, 224)),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(6, 4, 6, 4),
+                Margin = new Thickness(isMe ? 40 : 0, 3, isMe ? 0 : 40, 3),
+                HorizontalAlignment = isMe ? HorizontalAlignment.Right : HorizontalAlignment.Left,
+                MaxWidth = 180
+            };
+            var stack = new StackPanel();
+            var header = new StackPanel { Orientation = Orientation.Horizontal };
+            header.Children.Add(new TextBlock { Text = sender, FontWeight = FontWeights.Bold, FontSize = 10, Foreground = isMe ? new SolidColorBrush(Color.FromRgb(0, 0, 128)) : new SolidColorBrush(Color.FromRgb(128, 0, 0)) });
+            header.Children.Add(new TextBlock { Text = $" ({DateTime.Now:h:mm tt})", FontSize = 9, Foreground = new SolidColorBrush(Color.FromRgb(130, 130, 130)) });
+            stack.Children.Add(header);
+
+            var img = StickerManager.Base64ToImage(base64);
+            if (img != null)
+                stack.Children.Add(new Image { Source = img, MaxWidth = 120, MaxHeight = 120, Stretch = System.Windows.Media.Stretch.Uniform, Margin = new Thickness(0, 4, 0, 2) });
+            else
+                stack.Children.Add(new TextBlock { Text = $"🏷️ {stickerName}", FontSize = 10 });
+
+            container.Child = stack;
+            MessagesPanel.Children.Add(container);
+            ChatScroll.UpdateLayout();
+            ChatScroll.ScrollToEnd();
+        }
+
+        public void ReceiveSticker(StickerData data)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                AddStickerBubble(_contact.DisplayName, data.StickerName, data.StickerBase64, false);
+                if (!IsActive) { Title = $"[Sticker] {_contact.DisplayName}"; FlashWindow(); }
+            });
         }
 
         private async void Toolbar_Nudge(object sender, RoutedEventArgs e)
@@ -477,7 +583,8 @@ namespace MSNClient
             {
                 Title = title,
                 Background = System.Windows.Media.Brushes.Black,
-                Width = 800, Height = 600,
+                Width = 800,
+                Height = 600,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Owner = this
             };

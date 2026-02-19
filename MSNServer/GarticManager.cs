@@ -52,7 +52,8 @@ namespace MSNServer
                 client.DisplayName,
                 Math.Clamp(pkt.MaxPlayers, 2, 12),
                 Math.Clamp(pkt.RoundCount, 1, 10),
-                Math.Clamp(pkt.RoundTimeSeconds, 15, 120)
+                Math.Clamp(pkt.RoundTimeSeconds, 15, 120),
+                string.IsNullOrWhiteSpace(pkt.Language) ? "en" : pkt.Language
             );
 
             lock (_lock)
@@ -241,7 +242,7 @@ namespace MSNServer
                 }
 
                 lobby.CurrentDrawer = lobby.Players[lobby.CurrentDrawerIndex];
-                lobby.CurrentWord = GarticWordList.GetRandomWord();
+                lobby.CurrentWord = GarticWordList.GetRandomWord(lobby.Language);
                 lobby.CorrectGuessers.Clear();
                 lobby.TimeLeft = lobby.RoundTimeSeconds;
             }
@@ -521,6 +522,7 @@ namespace MSNServer
         public int MaxPlayers { get; }
         public int RoundCount { get; }
         public int RoundTimeSeconds { get; }
+        public string Language { get; }
         public List<string> Players { get; } = new();
         public Dictionary<string, string> PlayerDisplayNames { get; } = new();
         public Dictionary<string, int> Scores { get; } = new();
@@ -535,7 +537,7 @@ namespace MSNServer
         public int TimeLeft { get; set; }
         public CancellationTokenSource? RoundCts { get; set; }
 
-        public GarticLobby(string id, string name, string host, string hostDisplay, int maxPlayers, int roundCount, int roundTime)
+        public GarticLobby(string id, string name, string host, string hostDisplay, int maxPlayers, int roundCount, int roundTime, string language)
         {
             LobbyId = id;
             LobbyName = name;
@@ -543,6 +545,7 @@ namespace MSNServer
             MaxPlayers = maxPlayers;
             RoundCount = roundCount;
             RoundTimeSeconds = roundTime;
+            Language = language;
 
             Players.Add(host);
             PlayerDisplayNames[host] = hostDisplay;
@@ -562,25 +565,226 @@ namespace MSNServer
     {
         private static readonly Random _rng = new();
 
-        private static readonly string[] Words =
+        private static readonly string[] EnglishWords =
         {
-            "cat", "dog", "house", "tree", "car", "sun", "moon", "star", "fish", "bird",
-            "apple", "banana", "pizza", "guitar", "piano", "rocket", "airplane", "bicycle",
-            "umbrella", "rainbow", "castle", "dragon", "robot", "flower", "butterfly",
-            "mountain", "ocean", "island", "bridge", "train", "elephant", "penguin",
-            "snowman", "candle", "camera", "diamond", "crown", "sword", "shield", "whale",
-            "tornado", "volcano", "waterfall", "telescope", "mushroom", "cactus", "anchor",
-            "balloon", "compass", "feather", "glasses", "hammer", "ladder", "lighthouse",
-            "parachute", "sandwich", "treasure", "unicorn", "windmill", "zombie", "pirate",
-            "ninja", "cowboy", "astronaut", "mermaid", "vampire", "witch", "ghost",
-            "pumpkin", "snowflake", "thunder", "fire", "ice", "cloud", "rain", "heart",
-            "skull", "trophy", "medal", "key", "lock", "book", "pencil", "scissors",
-            "clock", "phone", "computer", "mouse", "keyboard", "headphones", "microphone",
-            "television", "popcorn", "donut", "cupcake", "cookie", "chocolate", "cheese",
-            "hamburger", "hotdog", "spaghetti", "taco", "sushi", "french fries",
-            "ice cream", "birthday cake", "campfire", "tent", "fishing rod", "palm tree"
+            // Animals
+            "cat","dog","fish","bird","horse","cow","pig","sheep","chicken","duck",
+            "rabbit","mouse","snake","frog","turtle","dolphin","whale","shark","octopus","jellyfish",
+            "crab","lobster","starfish","seahorse","penguin","eagle","owl","parrot","flamingo","peacock",
+            "swan","crow","pigeon","sparrow","bat","bear","lion","tiger","elephant","giraffe",
+            "zebra","monkey","gorilla","chimpanzee","panda","koala","kangaroo","crocodile","alligator","lizard",
+            "chameleon","iguana","gecko","dinosaur","butterfly","bee","ant","spider","ladybug","dragonfly",
+            "mosquito","fly","caterpillar","snail","worm","scorpion","beetle","grasshopper","cricket","firefly",
+            "moth","wasp","centipede","squid","clam","oyster","seal","otter","walrus","moose",
+            "deer","elk","reindeer","fox","wolf","coyote","raccoon","skunk","hedgehog","porcupine",
+            "squirrel","chipmunk","hamster","guinea pig","ferret","goldfish","salmon","tuna","swordfish","stingray",
+            // Food & Drink
+            "apple","banana","orange","grape","strawberry","blueberry","raspberry","watermelon","pineapple","mango",
+            "peach","pear","cherry","lemon","lime","coconut","avocado","tomato","potato","carrot",
+            "broccoli","spinach","lettuce","cucumber","pepper","onion","garlic","mushroom","corn","pumpkin",
+            "eggplant","celery","cabbage","cauliflower","asparagus","artichoke","radish","turnip","beet","zucchini",
+            "pizza","hamburger","hotdog","sandwich","taco","burrito","sushi","pasta","spaghetti","lasagna",
+            "steak","chicken","bacon","sausage","egg","pancake","waffle","toast","cereal","oatmeal",
+            "soup","salad","rice","noodles","bread","bagel","croissant","muffin","donut","cupcake",
+            "cake","pie","cookie","brownie","chocolate","candy","ice cream","popcorn","pretzel","chips",
+            "french fries","onion rings","cheese","butter","yogurt","milk","juice","coffee","tea","water",
+            "soda","lemonade","smoothie","milkshake","wine","beer","cocktail","honey","jam","peanut butter",
+            // Household
+            "house","apartment","building","skyscraper","castle","palace","cottage","cabin","tent","igloo",
+            "door","window","wall","roof","floor","ceiling","stairs","elevator","chimney","fireplace",
+            "kitchen","bedroom","bathroom","living room","dining room","garage","basement","attic","balcony","porch",
+            "chair","table","desk","couch","bed","pillow","blanket","mattress","shelf","bookcase",
+            "lamp","chandelier","candle","mirror","clock","alarm clock","calendar","picture frame","vase","curtain",
+            "carpet","rug","broom","mop","vacuum","bucket","trash can","recycling bin","washing machine","dryer",
+            "dishwasher","oven","stove","microwave","refrigerator","freezer","toaster","blender","mixer","kettle",
+            "fork","knife","spoon","plate","bowl","cup","mug","glass","napkin","tablecloth",
+            "soap","shampoo","toothbrush","toothpaste","towel","bathtub","shower","toilet","sink","faucet",
+            "key","lock","doorbell","mailbox","fence","gate","garden","lawn","driveway","sidewalk",
+            // Transportation
+            "car","truck","bus","van","motorcycle","bicycle","scooter","skateboard","rollerblade","wagon",
+            "taxi","ambulance","fire truck","police car","tractor","bulldozer","crane","excavator","forklift","tank",
+            "airplane","helicopter","jet","rocket","spaceship","satellite","hot air balloon","parachute","glider","drone",
+            "boat","ship","yacht","sailboat","canoe","kayak","raft","submarine","ferry","cruise ship",
+            "train","subway","tram","monorail","cable car","gondola","sled","snowmobile","hovercraft","segway",
+            // Body & Clothing
+            "head","face","eye","nose","mouth","ear","hair","eyebrow","eyelash","chin",
+            "neck","shoulder","arm","elbow","hand","finger","thumb","nail","chest","stomach",
+            "back","hip","leg","knee","ankle","foot","toe","heel","muscle","bone",
+            "heart","brain","lung","liver","kidney","blood","skin","tongue","tooth","lip",
+            "shirt","pants","shorts","dress","skirt","jacket","coat","sweater","hoodie","vest",
+            "suit","tie","bow tie","scarf","gloves","mittens","hat","cap","beanie","helmet",
+            "shoes","boots","sandals","slippers","sneakers","socks","belt","buckle","zipper","button",
+            "glasses","sunglasses","watch","bracelet","necklace","ring","earring","crown","tiara","headband",
+            // Nature & Weather
+            "sun","moon","star","planet","earth","sky","cloud","rain","snow","hail",
+            "thunder","lightning","tornado","hurricane","earthquake","volcano","rainbow","sunrise","sunset","dawn",
+            "mountain","hill","valley","cliff","canyon","cave","island","peninsula","desert","oasis",
+            "ocean","sea","lake","river","stream","waterfall","pond","swamp","marsh","glacier",
+            "forest","jungle","woods","meadow","field","prairie","tundra","savanna","beach","shore",
+            "rock","boulder","pebble","sand","mud","dirt","soil","dust","crystal","diamond",
+            "tree","flower","grass","bush","vine","leaf","branch","trunk","root","seed",
+            "rose","daisy","sunflower","tulip","lily","orchid","dandelion","cactus","palm tree","bamboo",
+            "pine tree","oak tree","maple tree","willow","fern","moss","mushroom","seaweed","coral","reef",
+            // Objects & Tools
+            "hammer","screwdriver","wrench","pliers","saw","drill","nail","screw","bolt","nut",
+            "tape","glue","scissors","ruler","measuring tape","level","paintbrush","roller","ladder","stool",
+            "rope","chain","wire","cable","pipe","hose","bucket","shovel","rake","wheelbarrow",
+            "axe","pickaxe","chisel","file","sandpaper","clamp","vise","crowbar","jack","pulley",
+            "pen","pencil","marker","crayon","eraser","sharpener","notebook","paper","envelope","stamp",
+            "book","magazine","newspaper","dictionary","encyclopedia","atlas","map","globe","compass","magnifying glass",
+            "camera","telescope","microscope","binoculars","thermometer","barometer","scale","calculator","computer","laptop",
+            "tablet","phone","television","radio","speaker","headphones","microphone","remote control","battery","charger",
+            "flashlight","lantern","lighter","match","candle","torch","spotlight","laser","prism","lens",
+            "umbrella","fan","heater","air conditioner","humidifier","dehumidifier","thermostat","smoke detector","fire extinguisher","first aid kit",
+            // Sports & Games
+            "basketball","football","soccer","baseball","tennis","volleyball","golf","hockey","cricket","rugby",
+            "bowling","boxing","wrestling","karate","fencing","archery","swimming","diving","surfing","skiing",
+            "snowboarding","skateboarding","cycling","running","jogging","hiking","climbing","fishing","hunting","camping",
+            "chess","checkers","dominoes","monopoly","scrabble","puzzle","crossword","sudoku","cards","dice",
+            "billiards","darts","ping pong","badminton","squash","handball","polo","lacrosse","curling","bobsled",
+            // Music & Art
+            "guitar","piano","violin","drums","trumpet","flute","saxophone","clarinet","trombone","harmonica",
+            "harp","banjo","ukulele","cello","accordion","tambourine","xylophone","triangle","maracas","cymbal",
+            "painting","drawing","sculpture","pottery","origami","calligraphy","mosaic","mural","graffiti","sketch",
+            "portrait","landscape","still life","abstract","watercolor","oil paint","acrylic","pastel","charcoal","canvas",
+            // Professions
+            "doctor","nurse","dentist","surgeon","veterinarian","pharmacist","paramedic","therapist","psychiatrist","optometrist",
+            "teacher","professor","principal","librarian","tutor","coach","counselor","researcher","scientist","engineer",
+            "architect","carpenter","electrician","plumber","mechanic","welder","painter","bricklayer","roofer","landscaper",
+            "chef","baker","butcher","waiter","bartender","barista","sommelier","farmer","fisherman","rancher",
+            "lawyer","judge","police officer","detective","firefighter","soldier","pilot","captain","astronaut","sailor",
+            "actor","singer","dancer","musician","comedian","magician","clown","director","producer","photographer",
+            // Fantasy & Fiction
+            "dragon","unicorn","mermaid","fairy","elf","dwarf","giant","troll","goblin","ogre",
+            "witch","wizard","vampire","werewolf","zombie","ghost","skeleton","mummy","pirate","ninja",
+            "knight","king","queen","prince","princess","jester","peasant","monk","samurai","gladiator",
+            "alien","robot","cyborg","android","spaceman","superhero","villain","monster","demon","angel",
+            "phoenix","griffin","centaur","minotaur","pegasus","hydra","kraken","yeti","bigfoot","leprechaun",
+            // Misc
+            "birthday cake","campfire","tent","fishing rod","treasure chest","treasure map","magic wand","crystal ball","fortune cookie","genie lamp",
+            "snowman","snowflake","icicle","igloo","avalanche","blizzard","fog","mist","dew","frost",
+            "fire","smoke","ash","ember","flame","spark","explosion","fireworks","bonfire","lava",
+            "anchor","compass","lighthouse","telescope","binoculars","magnifying glass","hourglass","sundial","pendulum","metronome",
+            "trophy","medal","ribbon","badge","certificate","diploma","scroll","flag","banner","pennant",
+            "balloon","kite","boomerang","frisbee","yo-yo","top","slingshot","trampoline","swing","slide",
+            "wheel","gear","spring","magnet","battery","lightbulb","switch","plug","socket","wire",
+            "gift","present","bow","wrapping paper","card","invitation","confetti","streamer","pinata","party hat",
+            "mask","costume","cape","wand","shield","sword","armor","bow and arrow","spear","dagger",
+            "map","compass","backpack","sleeping bag","lantern","binoculars","canteen","whistle","signal flare","life jacket"
         };
 
-        public static string GetRandomWord() => Words[_rng.Next(Words.Length)];
+        private static readonly string[] TurkishWords =
+        {
+            // Hayvanlar
+            "kedi","köpek","balık","kuş","at","inek","domuz","koyun","tavuk","ördek",
+            "tavşan","fare","yılan","kurbağa","kaplumbağa","yunus","balina","köpekbalığı","ahtapot","denizanası",
+            "yengeç","ıstakoz","denizyıldızı","denizatı","penguen","kartal","baykuş","papağan","flamingo","tavus kuşu",
+            "kuğu","karga","güvercin","serçe","yarasa","ayı","aslan","kaplan","fil","zürafa",
+            "zebra","maymun","goril","şempanze","panda","koala","kanguru","timsah","kertenkele","bukalemun",
+            "iguana","dinozor","kelebek","arı","karınca","örümcek","uğur böceği","yusufçuk","sivrisinek","sinek",
+            "tırtıl","salyangoz","solucan","akrep","böcek","çekirge","ateş böceği","güve","eşek arısı","kırkayak",
+            "mürekkep balığı","midye","istiridye","fok","su samuru","mors","geyik","tilki","kurt","rakun",
+            "kokarca","kirpi","oklu kirpi","sincap","hamster","kobay","gelincik","japon balığı","somon","kılıç balığı",
+            "vatoz","deve","ceylan","antilop","bizon","gergedan","su aygırı","leopar","çita","jaguar",
+            // Yiyecek ve İçecek
+            "elma","muz","portakal","üzüm","çilek","karpuz","ananas","mango","şeftali","armut",
+            "kiraz","limon","hindistan cevizi","avokado","domates","patates","havuç","brokoli","ıspanak","marul",
+            "salatalık","biber","soğan","sarımsak","mantar","mısır","kabak","patlıcan","kereviz","lahana",
+            "karnabahar","kuşkonmaz","turp","pancar","pizza","hamburger","sosisli","sandviç","taco","suşi",
+            "makarna","spagetti","lazanya","biftek","tavuk","pastırma","sosis","yumurta","krep","gözleme",
+            "çorba","salata","pilav","erişte","ekmek","simit","poğaça","börek","çörek","kurabiye",
+            "pasta","turta","kek","browni","çikolata","şeker","dondurma","patlamış mısır","cips","peynir",
+            "tereyağı","yoğurt","süt","meyve suyu","kahve","çay","su","limonata","ayran","şalgam",
+            "bal","reçel","fıstık ezmesi","zeytin","zeytinyağı","sirke","hardal","ketçap","mayonez","sos",
+            "baklava","künefe","kadayıf","lokum","helva","aşure","sütlaç","kazandibi","tavuk göğsü","muhallebi",
+            // Ev ve Eşyalar
+            "ev","apartman","bina","gökdelen","kale","saray","kulübe","çadır","kapı","pencere",
+            "duvar","çatı","zemin","tavan","merdiven","asansör","baca","şömine","mutfak","yatak odası",
+            "banyo","oturma odası","yemek odası","garaj","bodrum","çatı katı","balkon","veranda","sandalye","masa",
+            "koltuk","yatak","yastık","battaniye","raf","kitaplık","lamba","avize","mum","ayna",
+            "saat","çalar saat","takvim","çerçeve","vazo","perde","halı","kilim","süpürge","paspas",
+            "elektrikli süpürge","kova","çöp kutusu","çamaşır makinesi","kurutma makinesi","bulaşık makinesi","fırın","ocak",
+            "mikrodalga","buzdolabı","dondurucu","tost makinesi","blender","mikser","çaydanlık","çatal","bıçak","kaşık",
+            "tabak","kase","bardak","fincan","peçete","sabun","şampuan","diş fırçası","diş macunu","havlu",
+            "küvet","duş","klozet","lavabo","musluk","anahtar","kilit","kapı zili","posta kutusu","çit",
+            "bahçe","çim","kaldırım","minder","sehpa","gardırop","komodin","şifonyer","vestiyer","etajer",
+            // Ulaşım
+            "araba","kamyon","otobüs","minibüs","motosiklet","bisiklet","scooter","kaykay","vagon","taksi",
+            "ambulans","itfaiye","polis arabası","traktör","buldozer","vinç","kepçe","forklift","tank","uçak",
+            "helikopter","roket","uzay gemisi","uydu","sıcak hava balonu","paraşüt","planör","drone","gemi","tekne",
+            "yat","yelkenli","kano","kayık","sal","denizaltı","feribot","yolcu gemisi","tren","metro",
+            "tramvay","teleferik","gondol","kızak","kar motoru","bisiklet","paten","at arabası","uçurtma","balonlu",
+            // Vücut ve Giyim
+            "kafa","yüz","göz","burun","ağız","kulak","saç","kaş","kirpik","çene",
+            "boyun","omuz","kol","dirsek","el","parmak","başparmak","tırnak","göğüs","karın",
+            "sırt","kalça","bacak","diz","ayak bileği","ayak","ayak parmağı","topuk","kas","kemik",
+            "kalp","beyin","akciğer","karaciğer","böbrek","kan","deri","dil","diş","dudak",
+            "gömlek","pantolon","şort","elbise","etek","ceket","mont","kazak","kapüşonlu","yelek",
+            "takım elbise","kravat","papyon","atkı","eldiven","şapka","kep","bere","kask","ayakkabı",
+            "çizme","sandalet","terlik","spor ayakkabı","çorap","kemer","toka","fermuar","düğme","gözlük",
+            "güneş gözlüğü","kol saati","bilezik","kolye","yüzük","küpe","taç","taç","saç bandı","broş",
+            // Doğa ve Hava
+            "güneş","ay","yıldız","gezegen","dünya","gökyüzü","bulut","yağmur","kar","dolu",
+            "gök gürültüsü","şimşek","kasırga","hortum","deprem","yanardağ","gökkuşağı","gün doğumu","gün batımı","şafak",
+            "dağ","tepe","vadi","uçurum","kanyon","mağara","ada","yarımada","çöl","vaha",
+            "okyanus","deniz","göl","nehir","dere","şelale","gölet","bataklık","buzul","orman",
+            "tropikal orman","ağaçlık","çayır","tarla","step","tundra","kumsal","kıyı","kaya","taş",
+            "çakıl","kum","çamur","toprak","toz","kristal","elmas","ağaç","çiçek","çimen",
+            "çalı","sarmaşık","yaprak","dal","gövde","kök","tohum","gül","papatya","ayçiçeği",
+            "lale","zambak","orkide","karahindiba","kaktüs","palmiye","bambu","çam","meşe","akçaağaç",
+            "söğüt","eğrelti","yosun","deniz yosunu","mercan","kayalık","ova","yayla","bozkır","fundalık",
+            // Nesneler ve Aletler
+            "çekiç","tornavida","anahtar","pense","testere","matkap","çivi","vida","cıvata","somun",
+            "bant","yapıştırıcı","makas","cetvel","şerit metre","su terazisi","boya fırçası","rulo","merdiven","tabure",
+            "ip","zincir","tel","kablo","boru","hortum","kürek","tırmık","el arabası","balta",
+            "kazma","keski","eğe","zımpara","mengene","levye","kriko","kasnak","kalem","kurşun kalem",
+            "keçeli kalem","boya kalemi","silgi","kalemtıraş","defter","kağıt","zarf","pul","kitap","dergi",
+            "gazete","sözlük","ansiklopedi","atlas","harita","küre","pusula","büyüteç","kamera","teleskop",
+            "mikroskop","dürbün","termometre","barometre","terazi","hesap makinesi","bilgisayar","dizüstü bilgisayar",
+            "tablet","telefon","televizyon","radyo","hoparlör","kulaklık","mikrofon","uzaktan kumanda","pil","şarj aleti",
+            "el feneri","fener","çakmak","kibrit","mum","meşale","spot ışığı","lazer","prizma","mercek",
+            "şemsiye","vantilatör","ısıtıcı","klima","nem giderici","termostat","duman dedektörü","yangın söndürücü","ilk yardım çantası","düdük",
+            // Spor ve Oyunlar
+            "basketbol","futbol","beyzbol","tenis","voleybol","golf","hokey","kriket","ragbi","bowling",
+            "boks","güreş","karate","eskrim","okçuluk","yüzme","dalış","sörf","kayak","snowboard",
+            "paten","bisiklet","koşu","yürüyüş","tırmanış","balıkçılık","kamp","satranç","dama","domino",
+            "monopoly","yapboz","bulmaca","sudoku","kart","zar","bilardo","dart","masa tenisi","badminton",
+            "squash","hentbol","polo","körling","halter","jimnastik","atletizm","triatlon","maraton","pentatlon",
+            // Müzik ve Sanat
+            "gitar","piyano","keman","davul","trompet","flüt","saksafon","klarnet","trombon","mızıka",
+            "arp","ukulele","çello","akordeon","tef","ksilofon","üçgen","marakas","zil","def",
+            "resim","çizim","heykel","seramik","origami","hat sanatı","mozaik","duvar resmi","grafiti","eskiz",
+            "portre","manzara","natürmort","soyut","suluboya","yağlı boya","akrilik","pastel","kömür","tuval",
+            // Meslekler
+            "doktor","hemşire","diş hekimi","cerrah","veteriner","eczacı","paramedik","terapist","psikiyatrist","göz doktoru",
+            "öğretmen","profesör","müdür","kütüphaneci","antrenör","danışman","araştırmacı","bilim insanı","mühendis","mimar",
+            "marangoz","elektrikçi","tesisatçı","tamirci","kaynakçı","boyacı","duvarcı","çiftçi","balıkçı","çoban",
+            "aşçı","fırıncı","kasap","garson","barmen","barista","avukat","hakim","polis","dedektif",
+            "itfaiyeci","asker","pilot","kaptan","astronot","denizci","aktör","şarkıcı","dansçı","müzisyen",
+            "komedyen","sihirbaz","palyaço","yönetmen","yapımcı","fotoğrafçı","gazeteci","editör","yazar","şair",
+            // Fantazi ve Kurgu
+            "ejderha","tek boynuzlu at","deniz kızı","peri","elf","cüce","dev","trol","goblin","cadı",
+            "büyücü","vampir","kurt adam","zombi","hayalet","iskelet","mumya","korsan","ninja","şövalye",
+            "kral","kraliçe","prens","prenses","soytarı","köylü","keşiş","samuray","gladyatör","uzaylı",
+            "robot","süper kahraman","kötü adam","canavar","şeytan","melek","anka kuşu","grifon","sentaur",
+            "minotaur","pegasus","hidra","kraken","yeti","kocaayak","cin","ifrit","devasa","titan",
+            // Çeşitli
+            "doğum günü pastası","kamp ateşi","olta","hazine sandığı","hazine haritası","sihirli değnek","kristal küre",
+            "kardan adam","kar tanesi","buz sarkıtı","çığ","tipi","sis","çiğ","kırağı","buz",
+            "ateş","duman","kül","kor","alev","kıvılcım","patlama","havai fişek","lav","volkan",
+            "çapa","pusula","deniz feneri","dürbün","kum saati","güneş saati","sarkaç","metronom","bayrak","flama",
+            "kupa","madalya","kurdele","rozet","sertifika","diploma","tomar","afiş","pankart","balon",
+            "uçurtma","bumerang","frizbi","topaç","sapan","trambolin","salıncak","kaydırak","tahterevalli","dönme dolap",
+            "tekerlek","dişli","yay","mıknatıs","ampul","anahtar","fiş","priz","hediye","paket",
+            "kurdale","ambalaj kağıdı","davetiye","konfeti","süs","pinyata","parti şapkası","maske","kostüm","pelerin",
+            "kalkan","kılıç","zırh","ok ve yay","mızrak","hançer","sırt çantası","uyku tulumu","matara","can yeleği",
+            "nazar boncuğu","kilim","seccade","ibrik","çaydanlık","cezve","fincan","mangal","semaver","lale bahçesi"
+        };
+
+        public static string GetRandomWord(string language = "en") =>
+            language == "tr"
+                ? TurkishWords[_rng.Next(TurkishWords.Length)]
+                : EnglishWords[_rng.Next(EnglishWords.Length)];
     }
+
 }

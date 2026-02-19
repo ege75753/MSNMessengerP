@@ -71,6 +71,14 @@ namespace MSNShared
         GarticLobbyList,   // client requests list of open lobbies
         GarticLobbies,     // server responds with lobbies
 
+        // Gartic Phone
+        GarticPhone,           // all gartic phone packets
+        GarticPhoneLobbyList,  // client requests list of phone lobbies
+        GarticPhoneLobbies,    // server responds with phone lobbies
+
+        // Stickers
+        StickerSend,
+
         // Ping/pong
         Ping,
         Pong,
@@ -203,6 +211,19 @@ namespace MSNShared
     {
         public string From { get; set; } = "";
         public string To { get; set; } = "";
+        public bool IsGroup { get; set; }
+        public string GroupId { get; set; } = "";
+    }
+
+    public class StickerData
+    {
+        public string From { get; set; } = "";
+        public string To { get; set; } = "";
+        public bool IsGroup { get; set; }
+        public string GroupId { get; set; } = "";
+        public string StickerName { get; set; } = "";
+        public string StickerBase64 { get; set; } = "";
+        public string MimeType { get; set; } = "image/png";
     }
 
     public class GroupInfo
@@ -469,6 +490,7 @@ namespace MSNShared
         public Dictionary<string, int> Scores { get; set; } = new();
         public string Host { get; set; } = "";
         public bool GameStarted { get; set; }
+        public string Language { get; set; } = "en";
         // Drawing
         public string? DrawDataJson { get; set; }
         // Chat / Guess
@@ -485,6 +507,77 @@ namespace MSNShared
     }
 
     public class GarticLobbyInfo
+    {
+        public string LobbyId { get; set; } = "";
+        public string LobbyName { get; set; } = "";
+        public string Host { get; set; } = "";
+        public string HostDisplayName { get; set; } = "";
+        public int PlayerCount { get; set; }
+        public int MaxPlayers { get; set; }
+        public bool GameStarted { get; set; }
+    }
+
+    // ─── Gartic Phone ────────────────────────────────────────────────────────
+
+    public enum GarticPhoneMsgType
+    {
+        CreateLobby,
+        LobbyState,
+        JoinLobby,
+        LeaveLobby,
+        StartGame,
+        PhaseState,         // server → player: your current phase (write / draw / describe / wait)
+        SubmitPhrase,       // player → server: initial phrase to draw
+        SubmitDrawing,      // player → server: base64 drawing
+        SubmitDescription,  // player → server: text description
+        ChainResult,        // server → all: one complete chain reveal
+        NextChain,          // host → server: advance to next chain in reveal
+        GameOver,           // server → all: all chains shown, game over
+    }
+
+    public class GarticPhonePacket
+    {
+        public GarticPhoneMsgType Msg { get; set; }
+        public string LobbyId { get; set; } = "";
+        public string From { get; set; } = "";
+        // Lobby
+        public string LobbyName { get; set; } = "";
+        public int MaxPlayers { get; set; } = 8;
+        public int DrawTimeSeconds { get; set; } = 60;
+        public int DescribeTimeSeconds { get; set; } = 30;
+        public List<string> Players { get; set; } = new();
+        public Dictionary<string, string> PlayerDisplayNames { get; set; } = new();
+        public string Host { get; set; } = "";
+        public bool GameStarted { get; set; }
+        public string Language { get; set; } = "en";
+        // Phase
+        public string PhaseType { get; set; } = "";  // "draw" or "describe"
+        public int PhaseIndex { get; set; }           // which step in the chain
+        public int TotalPhases { get; set; }
+        public int TimeLeft { get; set; }
+        public string Prompt { get; set; } = "";      // word to draw or description to draw
+        public string DrawingBase64 { get; set; } = ""; // drawing to describe (base64 PNG)
+        public string Description { get; set; } = "";   // submitted description
+        // Chain result
+        public string ChainOwner { get; set; } = "";    // who started this chain
+        public string ChainOwnerDisplay { get; set; } = "";
+        public List<GarticPhoneChainStep> ChainSteps { get; set; } = new();
+        public int ChainIndex { get; set; }             // which chain (0-based)
+        public int TotalChains { get; set; }            // total chains to reveal
+        // Message
+        public string Message { get; set; } = "";
+        public string DisplayName { get; set; } = "";
+    }
+
+    public class GarticPhoneChainStep
+    {
+        public string Player { get; set; } = "";
+        public string PlayerDisplay { get; set; } = "";
+        public string Type { get; set; } = "";         // "word", "drawing", "description"
+        public string Content { get; set; } = "";       // the word, base64 image, or description text
+    }
+
+    public class GarticPhoneLobbyInfo
     {
         public string LobbyId { get; set; } = "";
         public string LobbyName { get; set; } = "";

@@ -32,6 +32,8 @@ namespace MSNClient
                         {
                             _state.MyUsername = ack.User!.Username;
                             _state.MyDisplayName = ack.User.DisplayName;
+                            _state.MyAvatarEmoji = ack.User.AvatarEmoji;
+                            _state.MyProfilePicFileId = ack.User.ProfilePicFileId;
                             // Open main window
                             var main = new MainWindow();
                             main.Show();

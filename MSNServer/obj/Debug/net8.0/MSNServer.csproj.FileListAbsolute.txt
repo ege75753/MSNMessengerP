@@ -17,3 +17,4 @@ C:\Users\Egexx\Downloads\MSNMessenger\MSNServer\obj\Debug\net8.0\refint\MSNServe
 C:\Users\Egexx\Downloads\MSNMessenger\MSNServer\obj\Debug\net8.0\MSNServer.pdb
 C:\Users\Egexx\Downloads\MSNMessenger\MSNServer\obj\Debug\net8.0\MSNServer.genruntimeconfig.cache
 C:\Users\Egexx\Downloads\MSNMessenger\MSNServer\obj\Debug\net8.0\ref\MSNServer.dll
+C:\Users\Egexx\Downloads\MSNMessenger\MSNServer\obj\Debug\net8.0\MSNServer.sourcelink.json

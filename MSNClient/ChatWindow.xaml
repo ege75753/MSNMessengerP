@@ -102,6 +102,7 @@
                 <Button Style="{StaticResource MSNBtn}" Margin="1,0" Padding="3,1" Content="U" Click="Underline_Click"/>
                 <Separator Margin="3,0"/>
                 <Button Style="{StaticResource MSNBtn}" Margin="1,0" Padding="4,1" Content="😊" Click="Emoticon_Click" ToolTip="Emoticons"/>
+                <Button Style="{StaticResource MSNBtn}" Margin="1,0" Padding="4,1" Content="🏷️" Click="Sticker_Click" ToolTip="Stickers"/>
                 <Button Style="{StaticResource MSNBtn}" Margin="1,0" Padding="4,1" Content="A" Foreground="Blue" Click="Color_Click" ToolTip="Font Color"/>
             </StackPanel>
         </Border>

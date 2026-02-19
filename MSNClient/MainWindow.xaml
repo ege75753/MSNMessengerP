@@ -92,6 +92,10 @@
                     <StackPanel><TextBlock Text="⚙️" FontSize="14" HorizontalAlignment="Center"/>
                     <TextBlock Text="Settings" FontSize="8" HorizontalAlignment="Center"/></StackPanel>
                 </Button>
+                <Button Style="{StaticResource MSNBtn}" Margin="2,0" Padding="5,2" Click="Toolbar_Games">
+                    <StackPanel><TextBlock Text="🎮" FontSize="14" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Games" FontSize="8" HorizontalAlignment="Center"/></StackPanel>
+                </Button>
             </StackPanel>
         </Border>
 

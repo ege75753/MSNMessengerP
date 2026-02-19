@@ -16,6 +16,7 @@ namespace MSNServer
         private readonly FileStore _fileStore;
         private readonly TttManager _ttt;
         private readonly GarticManager _gartic;
+        private readonly GarticPhoneManager _garticPhone;
         private TcpListener? _listener;
         private UdpClient? _discoveryUdp;
         private readonly ConcurrentDictionary<string, ConnectedClient> _clients = new();
@@ -33,6 +34,9 @@ namespace MSNServer
                 username => { if (_clients.TryGetValue(username, out var c)) return BroadcastPresenceAsync(c, c.Status); return Task.CompletedTask; }
             );
             _gartic = new GarticManager(
+                username => _clients.TryGetValue(username, out var c) ? c : null
+            );
+            _garticPhone = new GarticPhoneManager(
                 username => _clients.TryGetValue(username, out var c) ? c : null
             );
         }
@@ -200,6 +204,10 @@ namespace MSNServer
                     await HandleRequestProfilePicAsync(client, packet);
                     break;
 
+                case PacketType.StickerSend when client.IsAuthenticated:
+                    await HandleStickerSendAsync(client, packet);
+                    break;
+
                 case PacketType.TicTacToe when client.IsAuthenticated:
                     var tttPkt = packet.GetData<TttPacket>();
                     if (tttPkt != null) await _ttt.HandleAsync(client, tttPkt);
@@ -218,6 +226,16 @@ namespace MSNServer
                 case PacketType.GarticLobbyList when client.IsAuthenticated:
                     var lobbies = _gartic.GetLobbies();
                     await client.SendAsync(Packet.Create(PacketType.GarticLobbies, lobbies));
+                    break;
+
+                case PacketType.GarticPhone when client.IsAuthenticated:
+                    var phonePkt = packet.GetData<GarticPhonePacket>();
+                    if (phonePkt != null) await _garticPhone.HandleAsync(client, phonePkt);
+                    break;
+
+                case PacketType.GarticPhoneLobbyList when client.IsAuthenticated:
+                    var phoneLobbies = _garticPhone.GetLobbies();
+                    await client.SendAsync(Packet.Create(PacketType.GarticPhoneLobbies, phoneLobbies));
                     break;
 
                 default:
@@ -435,8 +453,45 @@ namespace MSNServer
             var data = packet.GetData<NudgeData>();
             if (data is null) return;
             data.From = client.Username!;
-            if (_clients.TryGetValue(data.To, out var target))
-                await target.SendAsync(Packet.Create(PacketType.Nudge, data));
+
+            if (data.IsGroup)
+            {
+                // Group nudge: broadcast to all online members except sender
+                if (!_store.Groups.TryGetValue(data.GroupId, out var group)) return;
+                foreach (var member in group.Members.Where(m => m != client.Username))
+                {
+                    if (_clients.TryGetValue(member, out var mc))
+                        await mc.SendAsync(Packet.Create(PacketType.Nudge, data));
+                }
+            }
+            else
+            {
+                // Direct nudge
+                if (_clients.TryGetValue(data.To, out var target))
+                    await target.SendAsync(Packet.Create(PacketType.Nudge, data));
+            }
+        }
+
+        private async Task HandleStickerSendAsync(ConnectedClient client, Packet packet)
+        {
+            var data = packet.GetData<StickerData>();
+            if (data is null) return;
+            data.From = client.Username!;
+
+            if (data.IsGroup)
+            {
+                if (!_store.Groups.TryGetValue(data.GroupId, out var group)) return;
+                foreach (var member in group.Members.Where(m => m != client.Username))
+                {
+                    if (_clients.TryGetValue(member, out var mc))
+                        await mc.SendAsync(Packet.Create(PacketType.StickerSend, data));
+                }
+            }
+            else
+            {
+                if (_clients.TryGetValue(data.To, out var target))
+                    await target.SendAsync(Packet.Create(PacketType.StickerSend, data));
+            }
         }
 
         private async Task HandleCreateGroupAsync(ConnectedClient client, Packet packet)
@@ -788,6 +843,7 @@ namespace MSNServer
                 // Handle any ongoing game
                 await _ttt.OnDisconnect(client.Username);
                 await _gartic.OnDisconnect(client.Username);
+                await _garticPhone.OnDisconnect(client.Username);
 
                 // Broadcast offline
                 await BroadcastToAllAsync(Packet.Create(PacketType.PresenceBroadcast, new PresenceData

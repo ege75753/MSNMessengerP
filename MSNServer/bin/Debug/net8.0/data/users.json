@@ -1,43 +1,28 @@
 {
-  "egg": {
-    "Username": "egg",
-    "PasswordHash": "$2a$11$UnH1wLxQNGhy15b6NCU3T.WIj1COjFggyVulovKMq5zAIDzQmujUC",
-    "DisplayName": "egg",
-    "Email": "",
-    "AvatarEmoji": "\uD83D\uDE42",
-    "ProfilePicFileId": "pfp_egg_1771435755",
-    "Contacts": [
-      "egg1"
-    ],
-    "Groups": [
-      "13a9e92f1406"
-    ],
-    "CreatedAt": "2026-02-18T16:01:14.6742888Z"
-  },
   "egg1": {
     "Username": "egg1",
-    "PasswordHash": "$2a$11$6fiMa.k44.v5.oR67.5cUONRKQh8OAYBdBI0YRRJHnJvYFFFAPSAu",
+    "PasswordHash": "$2a$11$u1LqfNWLWKVSAGICsuUGduOwRf8mnbppO5Zf.DPIeVj4ZN6B7gol6",
     "DisplayName": "egg1",
     "Email": "",
     "AvatarEmoji": "\uD83D\uDE42",
-    "ProfilePicFileId": "pfp_egg1_1771435750",
-    "Contacts": [
-      "egg"
-    ],
+    "ProfilePicFileId": "pfp_egg1_1771520788",
+    "Contacts": [],
     "Groups": [
-      "13a9e92f1406"
+      "750e723181cb"
     ],
-    "CreatedAt": "2026-02-18T16:01:22.2383552Z"
+    "CreatedAt": "2026-02-19T16:29:35.7386534Z"
   },
   "egg2": {
     "Username": "egg2",
-    "PasswordHash": "$2a$11$57NFgPsyuovuxw5bMZUaU.SXR6oZfJ3/TLqs3DQer5UtcuZ2Tegem",
+    "PasswordHash": "$2a$11$538DYh4qObASl7vIpHwT/eFnSdPzDlY9TnvV12B.fEggjYKEFd5NK",
     "DisplayName": "egg2",
     "Email": "",
     "AvatarEmoji": "\uD83D\uDE42",
-    "ProfilePicFileId": "pfp_egg2_1771439604",
+    "ProfilePicFileId": "pfp_egg2_1771520801",
     "Contacts": [],
-    "Groups": [],
-    "CreatedAt": "2026-02-18T16:07:15.1636007Z"
+    "Groups": [
+      "750e723181cb"
+    ],
+    "CreatedAt": "2026-02-19T16:30:17.8812101Z"
   }
 }

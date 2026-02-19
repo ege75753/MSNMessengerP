@@ -1,13 +1,23 @@
 {
   "version": 2,
-  "dgSpecHash": "r6fshrqA1iY=",
+  "dgSpecHash": "XZD53rXPYH8=",
   "success": true,
   "projectFilePath": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNShared\\MSNShared.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Egexx\\.nuget\\packages\\system.text.json\\8.0.5\\system.text.json.8.0.5.nupkg.sha512",
-    "C:\\Users\\Egexx\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.23\\microsoft.windowsdesktop.app.ref.8.0.23.nupkg.sha512",
-    "C:\\Users\\Egexx\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.23\\microsoft.netcore.app.ref.8.0.23.nupkg.sha512",
-    "C:\\Users\\Egexx\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.23\\microsoft.aspnetcore.app.ref.8.0.23.nupkg.sha512"
+    "C:\\Users\\Egexx\\.nuget\\packages\\system.text.json\\8.0.5\\system.text.json.8.0.5.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1510",
+      "level": "Warning",
+      "message": "PackageReference System.Text.Json will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
+      "projectPath": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNShared\\MSNShared.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Egexx\\Downloads\\MSNMessenger\\MSNShared\\MSNShared.csproj",
+      "libraryId": "System.Text.Json",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
 }

@@ -145,7 +145,8 @@ namespace MSNClient
                 LobbyName = name,
                 MaxPlayers = maxPlayers > 0 ? maxPlayers : 8,
                 RoundCount = rounds > 0 ? rounds : 3,
-                RoundTimeSeconds = time > 0 ? time : 60
+                RoundTimeSeconds = time > 0 ? time : 60,
+                Language = (LanguageBox.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Tag?.ToString() ?? "en"
             }));
         }
     }

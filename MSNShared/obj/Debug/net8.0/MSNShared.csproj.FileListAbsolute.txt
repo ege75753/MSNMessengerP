@@ -9,3 +9,4 @@ C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Debug\net8.0\MSNShared.dll
 C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Debug\net8.0\refint\MSNShared.dll
 C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Debug\net8.0\MSNShared.pdb
 C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Debug\net8.0\ref\MSNShared.dll
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Debug\net8.0\MSNShared.sourcelink.json

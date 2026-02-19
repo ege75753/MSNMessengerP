@@ -34,3 +34,8 @@ C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net8.0-windows\GarticL
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net8.0-windows\GarticLobbyWindow.g.cs
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net8.0-windows\GarticWindow.baml
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net8.0-windows\GarticWindow.g.cs
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net8.0-windows\MSNClient.sourcelink.json
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net8.0-windows\GarticPhoneLobbyWindow.baml
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net8.0-windows\GarticPhoneWindow.baml
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net8.0-windows\GarticPhoneLobbyWindow.g.cs
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net8.0-windows\GarticPhoneWindow.g.cs
