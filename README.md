@@ -115,8 +115,7 @@ The server stores data in `./data/`:
 
 ```bash
 # Syntax: MSNServer.exe [tcp-port] [udp-discovery-port] [server name]
-dotnet run -- 7001 7002 "Bob's MSN Server"
-dotnet run -- 8080 8081 "School Network Chat"
+dotnet run -- 7001 7002 "Peyaminin kefir can sunucusu"
 ```
 
 ---
