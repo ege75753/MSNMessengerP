@@ -17,6 +17,8 @@ namespace MSNServer
         private readonly TttManager _ttt;
         private readonly GarticManager _gartic;
         private readonly GarticPhoneManager _garticPhone;
+        private readonly RpsManager _rps;
+        private readonly PaintIoManager _paintIo;
         private TcpListener? _listener;
         private UdpClient? _discoveryUdp;
         private readonly ConcurrentDictionary<string, ConnectedClient> _clients = new();
@@ -33,13 +35,13 @@ namespace MSNServer
                 username => _clients.TryGetValue(username, out var c) ? c : null,
                 username => { if (_clients.TryGetValue(username, out var c)) return BroadcastPresenceAsync(c, c.Status); return Task.CompletedTask; }
             );
-            _gartic = new GarticManager(
-                username => _clients.TryGetValue(username, out var c) ? c : null
-            );
-            _garticPhone = new GarticPhoneManager(
-                username => _clients.TryGetValue(username, out var c) ? c : null
-            );
+            _gartic = new GarticManager(_getClient);
+            _garticPhone = new GarticPhoneManager(_getClient);
+            _rps = new RpsManager(_getClient);
+            _paintIo = new PaintIoManager(_getClient);
         }
+
+        private ConnectedClient? _getClient(string username) => _clients.TryGetValue(username, out var c) ? c : null;
 
         public async Task StartAsync(CancellationToken ct = default)
         {
@@ -211,6 +213,16 @@ namespace MSNServer
                 case PacketType.TicTacToe when client.IsAuthenticated:
                     var tttPkt = packet.GetData<TttPacket>();
                     if (tttPkt != null) await _ttt.HandleAsync(client, tttPkt);
+                    break;
+
+                case PacketType.RockPaperScissors when client.IsAuthenticated:
+                    var rpsPkt = packet.GetData<RpsPacket>();
+                    if (rpsPkt != null) await _rps.HandleAsync(client, rpsPkt);
+                    break;
+
+                case PacketType.PaintIo when client.IsAuthenticated:
+                    var paintPkt = packet.GetData<PaintIoPacket>();
+                    if (paintPkt != null) await _paintIo.HandleAsync(client, paintPkt);
                     break;
 
                 case PacketType.TttListGames when client.IsAuthenticated:
@@ -844,6 +856,8 @@ namespace MSNServer
                 await _ttt.OnDisconnect(client.Username);
                 await _gartic.OnDisconnect(client.Username);
                 await _garticPhone.OnDisconnect(client.Username);
+                await _rps.OnDisconnect(client.Username);
+                await _paintIo.OnDisconnect(client.Username);
 
                 // Broadcast offline
                 await BroadcastToAllAsync(Packet.Create(PacketType.PresenceBroadcast, new PresenceData

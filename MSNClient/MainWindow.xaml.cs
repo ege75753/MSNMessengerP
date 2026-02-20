@@ -16,6 +16,7 @@ namespace MSNClient
         {
             InitializeComponent();
 
+
             // Wire up network events
             _state.Net.PacketReceived += OnPacket;
             _state.Net.Disconnected += OnDisconnected;
@@ -232,6 +233,11 @@ namespace MSNClient
                     if (ttt != null) HandleTttPacket(ttt);
                     break;
 
+                case PacketType.RockPaperScissors:
+                    var rps = pkt.GetData<RpsPacket>();
+                    if (rps != null) HandleRpsPacket(rps);
+                    break;
+
                 case PacketType.TttGameList:
                     // Handled by pending spectate dialog
                     break;
@@ -352,6 +358,49 @@ namespace MSNClient
             if (_state.OpenTttGames.ContainsKey(gameId)) { _state.OpenTttGames[gameId].Focus(); return; }
             await _state.Net.SendAsync(Packet.Create(PacketType.TicTacToe,
                 new TttPacket { Msg = TttMsgType.SpectateRequest, GameId = gameId, From = _state.MyUsername }));
+        }
+
+        // ── Rock Paper Scissors ────────────────────────────────────────────────
+        private void HandleRpsPacket(RpsPacket pkt)
+        {
+            switch (pkt.Msg)
+            {
+                case RpsMsgType.Invite:
+                    var fromDisplay = _state.GetContact(pkt.From)?.DisplayName ?? pkt.From;
+                    var res = MessageBox.Show(
+                        $"✂️ {fromDisplay} challenges you to Rock Paper Scissors!\n\nAccept?",
+                        "RPS Invitation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        _ = _state.Net.SendAsync(Packet.Create(PacketType.RockPaperScissors,
+                            new RpsPacket { Msg = RpsMsgType.InviteAccept, GameId = pkt.GameId, From = _state.MyUsername, To = pkt.From }));
+                    }
+                    else
+                    {
+                        _ = _state.Net.SendAsync(Packet.Create(PacketType.RockPaperScissors,
+                            new RpsPacket { Msg = RpsMsgType.InviteDecline, GameId = pkt.GameId, From = _state.MyUsername, To = pkt.From }));
+                    }
+                    break;
+
+                case RpsMsgType.InviteAccept:
+                    // Open game window
+                    // Store it somewhere? For now just create and show.
+                    // Ideally we track open games to prevent duplicates but Window logic handles itself mostly.
+                    var win = new RockPaperScissorsWindow(pkt.GameId, pkt.From == _state.MyUsername ? pkt.To : pkt.From) { Owner = this };
+                    win.Show();
+                    break;
+
+                case RpsMsgType.InviteDecline:
+                    MessageBox.Show($"{pkt.From} declined your RPS invitation.", "Invitation Declined", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+            }
+        }
+
+        private async void ChallengeRps(string opponent)
+        {
+            await _state.Net.SendAsync(Packet.Create(PacketType.RockPaperScissors,
+                new RpsPacket { Msg = RpsMsgType.Invite, From = _state.MyUsername, To = opponent }));
         }
 
         // ── UI Builder ─────────────────────────────────────────────────────────
@@ -594,6 +643,10 @@ namespace MSNClient
                 var challengeItem = new MenuItem { Header = "🎮 Challenge to Tic-Tac-Toe" };
                 challengeItem.Click += (s, e) => ChallengeTicTacToe(tttCapture.Username);
                 ctx.Items.Add(challengeItem);
+
+                var rpsItem = new MenuItem { Header = "✂️ Challenge to Rock Paper Scissors" };
+                rpsItem.Click += (s, e) => ChallengeRps(tttCapture.Username);
+                ctx.Items.Add(rpsItem);
             }
             ctx.Items.Add(new Separator());
 
@@ -921,37 +974,61 @@ namespace MSNClient
 
         private void Toolbar_Games(object sender, RoutedEventArgs e)
         {
-            var menu = new ContextMenu();
-            menu.Items.Add(new MenuItem
-            {
-                Header = "🎨 Gartic",
-                Command = new RelayCommand(() =>
-                {
-                    var lobbyWin = new GarticLobbyWindow { Owner = this };
-                    lobbyWin.Show();
-                })
-            });
-            menu.Items.Add(new MenuItem
-            {
-                Header = "📞 Gartic Phone",
-                Command = new RelayCommand(() =>
-                {
-                    var phoneWin = new GarticPhoneLobbyWindow { Owner = this };
-                    phoneWin.Show();
-                })
-            });
-            menu.PlacementTarget = sender as Button;
-            menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
-            menu.IsOpen = true;
+            // Context menu for games
+            var cm = new ContextMenu();
+            var ttt = new MenuItem { Header = "Tic-Tac-Toe" };
+            ttt.Click += (s, args) => OpenTttLobby();
+            var gartic = new MenuItem { Header = "Gartic (Draw & Guess)" };
+            gartic.Click += (s, args) => OpenGarticLobby();
+            var phone = new MenuItem { Header = "Gartic Phone" };
+            phone.Click += (s, args) => OpenGarticPhoneLobby();
+            var paint = new MenuItem { Header = "Paint.IO" };
+            paint.Click += (s, args) => new Windows.PaintIoWindow().Show();
+
+            cm.Items.Add(ttt);
+            cm.Items.Add(gartic);
+            cm.Items.Add(phone);
+            cm.Items.Add(paint);
+            cm.IsOpen = true;
+        }
+
+        private void OpenTttLobby()
+        {
+            // Simple approach: show pending games window or direct join if we implemented full lobby
+            // For now, let's just create a new game or invite someone.
+            // But TTT works by context menu on contact.
+            // Let's launch a TTT Game List instead.
+            _ = _state.Net.SendAsync(Packet.Create(PacketType.TttListGames, new { }));
+            // And maybe a dialog to create game?
+            // For MVP, just show game list (UserList update?) or just list active games.
+            // We'll show a "Game Browser" window.
+            // new Windows.TttGameBrowserWindow().Show();
+            MessageBox.Show("Tic-Tac-Toe Lobby not implemented yet.", "Coming Soon");
+        }
+
+        private void OpenGarticLobby()
+        {
+            new GarticLobbyWindow { Owner = this }.Show();
+        }
+
+        private void OpenGarticPhoneLobby()
+        {
+            new GarticPhoneLobbyWindow { Owner = this }.Show();
         }
 
         private void Menu_File(object sender, RoutedEventArgs e)
         {
             var menu = new ContextMenu();
-            menu.Items.Add(new MenuItem { Header = "Sign Out", Command = new RelayCommand(async () => { await _state.Net.SendAsync(Packet.Create(PacketType.Logout, new { })); _state.Net.Disconnect(); new LoginWindow().Show(); Close(); }) });
-            menu.Items.Add(new MenuItem { Header = "Exit", Command = new RelayCommand(() => Application.Current.Shutdown()) });
+            var si = new MenuItem { Header = "Sign Out" };
+            si.Click += async (s, args) => { await _state.Net.SendAsync(Packet.Create(PacketType.Logout, new { })); _state.Net.Disconnect(); new LoginWindow().Show(); Close(); };
+            menu.Items.Add(si);
+            var ex = new MenuItem { Header = "Exit" };
+            ex.Click += (s, args) => Application.Current.Shutdown();
+            menu.Items.Add(ex);
             menu.IsOpen = true;
         }
+
+
 
         private void Menu_Contacts(object sender, RoutedEventArgs e)
         {

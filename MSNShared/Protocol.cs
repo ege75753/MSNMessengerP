@@ -82,6 +82,12 @@ namespace MSNShared
         // Ping/pong
         Ping,
         Pong,
+
+        // Rock Paper Scissors
+        RockPaperScissors,
+
+        // PaintIO
+        PaintIo
     }
 
     public enum UserStatus
@@ -588,4 +594,87 @@ namespace MSNShared
         public bool GameStarted { get; set; }
     }
 
+    // ─── Rock Paper Scissors ────────────────────────────────────────────────
+    public enum RpsMsgType
+    {
+        Invite,
+        InviteAccept,
+        InviteDecline,
+        Move,           // player -> server
+        Result,         // server -> players (round result)
+        GameOver,       // server -> players
+        Leave,          // player -> server (abandon)
+    }
+
+    public enum RpsMove
+    {
+        None,
+        Rock,
+        Paper,
+        Scissors
+    }
+
+    public class RpsPacket
+    {
+        public RpsMsgType Msg { get; set; }
+        public string GameId { get; set; } = "";
+        public string From { get; set; } = "";
+        public string To { get; set; } = "";
+        public RpsMove Move { get; set; } = RpsMove.None;
+        public RpsMove OpponentMove { get; set; } = RpsMove.None; // Revealed only after both moved
+        public string Winner { get; set; } = ""; // Username of round/game winner
+        public int P1Score { get; set; }
+        public int P2Score { get; set; }
+    }
+
+    // ─── PaintIO (Paper.io clone) ───────────────────────────────────────────
+    public enum PaintIoMsgType
+    {
+        Join,       // client -> server (request to join)
+        Leave,      // client -> server
+        Input,      // client -> server (direction change)
+        State,      // server -> client (full or delta update)
+        Death,      // server -> client (you died)
+        GameInfo    // server -> client (dimensions, etc)
+    }
+
+    public enum Direction
+    {
+        Up,
+        Down,
+        Left,
+        Right
+    }
+
+    public class PaintIoPacket
+    {
+        public PaintIoMsgType Msg { get; set; }
+        public string Username { get; set; } = "";
+        public Direction Dir { get; set; }
+
+        // State Data
+        public int MapWidth { get; set; }
+        public int MapHeight { get; set; }
+        public List<PaintIoPlayer>? Players { get; set; }
+        public List<PaintIoMapUpdate>? MapUpdates { get; set; } // Cells that changed ownership
+    }
+
+    public class PaintIoPlayer
+    {
+        public string Username { get; set; } = "";
+        public string Color { get; set; } = "#FF0000";
+        public int X { get; set; }
+        public int Y { get; set; }
+        public bool IsAlive { get; set; } = true;
+        public int Score { get; set; } // Area size
+        public List<int[]> Trail { get; set; } = new(); // List of [x,y]
+    }
+
+    public class PaintIoMapUpdate
+    {
+        public string Owner { get; set; } = ""; // Username, empty if neutral
+        public int X { get; set; }
+        public int Y { get; set; }
+    }
 }
+

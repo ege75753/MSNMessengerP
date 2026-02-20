@@ -1,0 +1,41 @@
+{
+  "egg1": {
+    "Username": "egg1",
+    "PasswordHash": "$2a$11$kUduPOChxEBxjTxYO.g4n..usfoD.AN0feu/51XgP3TxMF08u6LvW",
+    "DisplayName": "egg1",
+    "Email": "",
+    "AvatarEmoji": "\uD83D\uDE42",
+    "ProfilePicFileId": "pfp_egg1_1771522583",
+    "Contacts": [],
+    "Groups": [
+      "279ee164906b"
+    ],
+    "CreatedAt": "2026-02-19T17:32:42.0318225Z"
+  },
+  "egg2": {
+    "Username": "egg2",
+    "PasswordHash": "$2a$11$oCWZk60UUGlT25aEvT5J8u9uL2HAotQU/GJBrGKHAMIKgE1RgEOGy",
+    "DisplayName": "egg2",
+    "Email": "",
+    "AvatarEmoji": "\uD83D\uDE42",
+    "ProfilePicFileId": "",
+    "Contacts": [],
+    "Groups": [
+      "279ee164906b"
+    ],
+    "CreatedAt": "2026-02-19T17:33:21.6713743Z"
+  },
+  "atahan": {
+    "Username": "atahan",
+    "PasswordHash": "$2a$11$d4jbodffP14F4MnYR7Zwj.QnHUo0ilv5cfAhls60/3UAYaAL4Ma1W",
+    "DisplayName": "atahan",
+    "Email": "",
+    "AvatarEmoji": "\uD83D\uDE42",
+    "ProfilePicFileId": "",
+    "Contacts": [],
+    "Groups": [
+      "279ee164906b"
+    ],
+    "CreatedAt": "2026-02-19T17:36:00.5750455Z"
+  }
+}

@@ -1,0 +1,6 @@
+{
+    "claudeCode.useTerminal": true,
+    "workbench.editor.autoLockGroups": {
+        "terminalEditor": false
+    }
+}

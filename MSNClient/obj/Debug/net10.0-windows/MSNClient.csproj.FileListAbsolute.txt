@@ -39,3 +39,7 @@ C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\refint
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\MSNClient.pdb
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\MSNClient.genruntimeconfig.cache
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\ref\MSNClient.dll
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\RockPaperScissorsWindow.baml
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\RockPaperScissorsWindow.g.cs
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\PaintIoWindow.baml
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\PaintIoWindow.g.cs

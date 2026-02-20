@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MSNServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+01a4ce66be0cb156217f819b34b3d381401862fe")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b7e7a76f70946f281722a0966abdac51d20bee0a")]
 [assembly: System.Reflection.AssemblyProductAttribute("MSNServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MSNServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
