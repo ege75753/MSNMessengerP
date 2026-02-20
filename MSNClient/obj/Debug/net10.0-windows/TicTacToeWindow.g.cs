@@ -171,7 +171,7 @@ namespace MSNClient {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/MSNClient;V1.0.0.0;component/tictactoewindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/MSNClient;component/tictactoewindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\TicTacToeWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

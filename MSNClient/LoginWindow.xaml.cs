@@ -137,41 +137,22 @@ namespace MSNClient
             }));
         }
 
-        private async void FindServers_Click(object sender, RoutedEventArgs e)
+        private void FindServers_Click(object sender, RoutedEventArgs e)
         {
-            ConnectionStatus.Text = "Scanning LAN...";
-            ConnectionStatus.Foreground = System.Windows.Media.Brushes.Gray;
-            ServerList.Items.Clear();
-
-            if (!int.TryParse(PortBox.Text.Trim(), out var dp)) dp = 443;
-
-            var servers = await NetworkClient.DiscoverServersAsync(dp + 1);
-
-            if (servers.Count == 0)
+            var browser = new ServerBrowserWindow { Owner = this };
+            if (browser.ShowDialog() == true && browser.SelectedServer != null)
             {
-                ConnectionStatus.Text = "No servers found on LAN.";
-                ServerList.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                ConnectionStatus.Text = $"Found {servers.Count} server(s):";
-                foreach (var s in servers)
-                    ServerList.Items.Add($"{s.Host}:{s.Port}  [{s.ServerName}]  ({s.UserCount} online)");
-                ServerList.Visibility = Visibility.Visible;
+                var s = browser.SelectedServer;
+                HostBox.Text = s.Host;
+                PortBox.Text = s.Port.ToString();
+                ConnectionStatus.Text = $"✅ Selected: {s.ServerName}";
+                ConnectionStatus.Foreground = System.Windows.Media.Brushes.Green;
             }
         }
 
         private void ServerList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ServerList.SelectedItem is string item)
-            {
-                var parts = item.Split(':');
-                if (parts.Length >= 2)
-                {
-                    HostBox.Text = parts[0];
-                    PortBox.Text = parts[1].Split(' ')[0];
-                }
-            }
+            // No longer used — kept to avoid XAML compile error (remove after next XAML cleanup)
         }
 
         private void PasswordBox_KeyDown(object sender, KeyEventArgs e)

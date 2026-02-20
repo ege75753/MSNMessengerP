@@ -19,6 +19,7 @@ namespace MSNServer
         private readonly GarticPhoneManager _garticPhone;
         private readonly RpsManager _rps;
         private readonly PaintIoManager _paintIo;
+        private readonly BlackjackManager _blackjack;
         private TcpListener? _listener;
         private UdpClient? _discoveryUdp;
         private readonly ConcurrentDictionary<string, ConnectedClient> _clients = new();
@@ -39,6 +40,7 @@ namespace MSNServer
             _garticPhone = new GarticPhoneManager(_getClient);
             _rps = new RpsManager(_getClient);
             _paintIo = new PaintIoManager(_getClient);
+            _blackjack = new BlackjackManager(_getClient);
         }
 
         private ConnectedClient? _getClient(string username) => _clients.TryGetValue(username, out var c) ? c : null;
@@ -132,6 +134,16 @@ namespace MSNServer
             {
                 case PacketType.Ping:
                     await client.SendAsync(Packet.Create(PacketType.Pong, new { }));
+                    break;
+
+                case PacketType.ServerDiscovery:
+                    // Respond with server info immediately, no auth required (used by server browser)
+                    await client.SendAsync(Packet.Create(PacketType.ServerAnnounce, new ServerAnnounceData
+                    {
+                        ServerName = _serverName,
+                        Port = _port,
+                        UserCount = _clients.Count
+                    }));
                     break;
 
                 case PacketType.Register:
@@ -248,6 +260,16 @@ namespace MSNServer
                 case PacketType.GarticPhoneLobbyList when client.IsAuthenticated:
                     var phoneLobbies = _garticPhone.GetLobbies();
                     await client.SendAsync(Packet.Create(PacketType.GarticPhoneLobbies, phoneLobbies));
+                    break;
+
+                case PacketType.Blackjack when client.IsAuthenticated:
+                    var bjPkt = packet.GetData<BlackjackPacket>();
+                    if (bjPkt != null) await _blackjack.HandleAsync(client, bjPkt);
+                    break;
+
+                case PacketType.BlackjackLobbyList when client.IsAuthenticated:
+                    var bjLobbies = _blackjack.GetLobbies();
+                    await client.SendAsync(Packet.Create(PacketType.BlackjackLobbies, bjLobbies));
                     break;
 
                 default:
@@ -858,6 +880,7 @@ namespace MSNServer
                 await _garticPhone.OnDisconnect(client.Username);
                 await _rps.OnDisconnect(client.Username);
                 await _paintIo.OnDisconnect(client.Username);
+                await _blackjack.OnDisconnect(client.Username);
 
                 // Broadcast offline
                 await BroadcastToAllAsync(Packet.Create(PacketType.PresenceBroadcast, new PresenceData
@@ -909,8 +932,10 @@ namespace MSNServer
                                 UserCount = _clients.Count
                             });
                             var bytes = System.Text.Encoding.UTF8.GetBytes(response);
-                            await _discoveryUdp.SendAsync(bytes, bytes.Length,
-                                result.RemoteEndPoint.Address.ToString(), _discoveryPort);
+                            // ⚠️ FIXED: respond to the ACTUAL sender endpoint (source port,
+                            // not the discovery port), otherwise the reply goes to port 443
+                            // on the client where nothing is listening.
+                            await _discoveryUdp.SendAsync(bytes, bytes.Length, result.RemoteEndPoint);
                         }
                     }
                     catch (OperationCanceledException) { break; }

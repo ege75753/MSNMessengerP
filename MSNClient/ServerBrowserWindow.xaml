@@ -1,0 +1,193 @@
+<Window x:Class="MSNClient.ServerBrowserWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="🌐 Server Browser" Height="560" Width="680"
+        MinHeight="420" MinWidth="540"
+        WindowStartupLocation="CenterScreen"
+        Background="#0D1117" FontFamily="Tahoma"
+        Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <Style x:Key="SbBtn" TargetType="Button">
+            <Setter Property="Background" Value="#1C2A3A"/>
+            <Setter Property="Foreground" Value="#C8D8E8"/>
+            <Setter Property="BorderBrush" Value="#2A4060"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#243650"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryBtn" TargetType="Button" BasedOn="{StaticResource SbBtn}">
+            <Setter Property="Background" Value="#1B4F8A"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#2E70C0"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="*"/>
+            <!-- Server list -->
+            <RowDefinition Height="Auto"/>
+            <!-- WAN section -->
+            <RowDefinition Height="Auto"/>
+            <!-- Status bar -->
+        </Grid.RowDefinitions>
+
+        <!-- ── Header ── -->
+        <Border Grid.Row="0" Background="#161B22" Padding="16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🌐" FontSize="20" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="Server Browser" FontSize="17" FontWeight="Bold"
+                                   Foreground="#58A6FF" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock x:Name="SubtitleText" Text="Scanning LAN for servers…"
+                               FontSize="10" Foreground="#8B949E" Margin="28,2,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button x:Name="RefreshBtn" Content="🔄  Refresh" Style="{StaticResource SbBtn}"
+                            Click="Refresh_Click" Margin="0,0,8,0"/>
+                    <Button x:Name="ScanLanBtn" Content="📡  Scan LAN" Style="{StaticResource PrimaryBtn}"
+                            Click="ScanLan_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ── Server List ── -->
+        <Grid Grid.Row="1" Margin="12,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Column headers -->
+            <Border Background="#161B22" CornerRadius="4,4,0,0" Padding="10,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="60"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="SERVER NAME" FontSize="10" FontWeight="Bold" Foreground="#8B949E"/>
+                    <TextBlock Grid.Column="1" Text="ADDRESS" FontSize="10" FontWeight="Bold" Foreground="#8B949E"/>
+                    <TextBlock Grid.Column="2" Text="PORT" FontSize="10" FontWeight="Bold" Foreground="#8B949E"/>
+                    <TextBlock Grid.Column="3" Text="PLAYERS" FontSize="10" FontWeight="Bold" Foreground="#8B949E"/>
+                    <TextBlock Grid.Column="4" Text="PING" FontSize="10" FontWeight="Bold" Foreground="#8B949E"/>
+                </Grid>
+            </Border>
+
+            <!-- Server rows -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                          Background="#0D1117" BorderBrush="#21262D" BorderThickness="1">
+                <StackPanel x:Name="ServerListPanel">
+                    <!-- Rows added programmatically -->
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Empty state -->
+            <Border Grid.Row="1" x:Name="EmptyState" Visibility="Collapsed"
+                    Background="#0D1117" BorderBrush="#21262D" BorderThickness="1">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="📡" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock x:Name="EmptyText" Text="No servers found on LAN"
+                               FontSize="14" Foreground="#8B949E" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Try adding a WAN server below or scanning again"
+                               FontSize="10" Foreground="#484F58" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Loading overlay -->
+            <Border Grid.Row="1" x:Name="LoadingOverlay" Background="#AA0D1117" Visibility="Collapsed">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock x:Name="LoadingText" Text="📡  Scanning…" FontSize="14"
+                               Foreground="#58A6FF" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- ── Manual WAN Entry ── -->
+        <Border Grid.Row="2" Background="#161B22" BorderBrush="#21262D"
+                BorderThickness="0,1,0,1" Padding="16,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Add server:" FontSize="11" Foreground="#8B949E"
+                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                <TextBox x:Name="ManualHostBox" Grid.Column="1" Height="28" FontSize="11"
+                         Background="#0D1117" Foreground="#E6EDF3" BorderBrush="#30363D"
+                         Padding="6,3" VerticalContentAlignment="Center"
+                         Text="192.168.1.x" ToolTip="Server IP or hostname"/>
+
+                <TextBlock Grid.Column="2" Text=":" FontSize="14" Foreground="#8B949E"
+                           VerticalAlignment="Center" Margin="6,0"/>
+
+                <TextBox x:Name="ManualPortBox" Grid.Column="3" Height="28" FontSize="11"
+                         Background="#0D1117" Foreground="#E6EDF3" BorderBrush="#30363D"
+                         Padding="6,3" VerticalContentAlignment="Center" Text="443"/>
+
+                <Button Grid.Column="4" Content="🔍 Test" Style="{StaticResource SbBtn}"
+                        Click="TestManual_Click" Margin="8,0,4,0"/>
+
+                <Button Grid.Column="5" Content="➕ Add" Style="{StaticResource PrimaryBtn}"
+                        Click="AddManual_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- ── Status bar + Connect ── -->
+        <Border Grid.Row="3" Background="#161B22" Padding="16,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="StatusText" Text="Click 'Scan LAN' to discover servers"
+                           FontSize="10" Foreground="#8B949E" VerticalAlignment="Center"/>
+                <Button Grid.Column="1" x:Name="ConnectBtn" Content="🔌  Connect"
+                        Style="{StaticResource PrimaryBtn}" IsEnabled="False"
+                        Click="Connect_Click" Margin="0,0,8,0"/>
+                <Button Grid.Column="2" Content="✕  Close"
+                        Style="{StaticResource SbBtn}" Click="Close_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

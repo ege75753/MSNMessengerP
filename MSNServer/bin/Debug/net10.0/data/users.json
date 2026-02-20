@@ -6,7 +6,9 @@
     "Email": "",
     "AvatarEmoji": "\uD83D\uDE42",
     "ProfilePicFileId": "pfp_egg1_1771522583",
-    "Contacts": [],
+    "Contacts": [
+      "atahan"
+    ],
     "Groups": [
       "279ee164906b"
     ],

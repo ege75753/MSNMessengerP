@@ -247,6 +247,11 @@ namespace MSNClient
                     // Handled by GarticLobbyWindow / GarticWindow via PacketReceived event
                     break;
 
+                case PacketType.Blackjack:
+                case PacketType.BlackjackLobbies:
+                    // Handled by BlackjackLobbyWindow / BlackjackWindow via PacketReceived event
+                    break;
+
                 case PacketType.Error:
                     var err = pkt.GetData<ErrorData>();
                     if (err?.Code == "KICKED")
@@ -982,14 +987,29 @@ namespace MSNClient
             gartic.Click += (s, args) => OpenGarticLobby();
             var phone = new MenuItem { Header = "Gartic Phone" };
             phone.Click += (s, args) => OpenGarticPhoneLobby();
-            var paint = new MenuItem { Header = "Paint.IO" };
+            var paint = new MenuItem { Header = "🎨 Paint.IO" };
             paint.Click += (s, args) => new Windows.PaintIoWindow().Show();
+            var blackjack = new MenuItem { Header = "🃏 Blackjack" };
+            blackjack.Click += (s, args) => OpenBlackjackLobby();
 
             cm.Items.Add(ttt);
             cm.Items.Add(gartic);
             cm.Items.Add(phone);
             cm.Items.Add(paint);
+            cm.Items.Add(blackjack);
             cm.IsOpen = true;
+        }
+
+        private void Toolbar_ServerBrowser(object sender, RoutedEventArgs e)
+        {
+            var browser = new ServerBrowserWindow { Owner = this };
+            if (browser.ShowDialog() == true && browser.SelectedServer != null)
+            {
+                var s = browser.SelectedServer;
+                MessageBox.Show(
+                    $"Server: {s.ServerName}\nAddress: {s.Host}:{s.Port}\nOnline users: {s.UserCount}\n\nTo connect to this server, sign out and re-connect via the login screen's Server Browser.",
+                    "Server Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         private void OpenTttLobby()
@@ -1014,6 +1034,11 @@ namespace MSNClient
         private void OpenGarticPhoneLobby()
         {
             new GarticPhoneLobbyWindow { Owner = this }.Show();
+        }
+
+        private void OpenBlackjackLobby()
+        {
+            new BlackjackLobbyWindow { Owner = this }.Show();
         }
 
         private void Menu_File(object sender, RoutedEventArgs e)

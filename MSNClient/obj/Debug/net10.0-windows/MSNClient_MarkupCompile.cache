@@ -1,20 +1,20 @@
 ﻿MSNClient
-1.0.0.0
+
 
 winexe
 C#
 .cs
-c:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\
 MSNClient
 none
 false
 TRACE;DEBUG;NET;NET10_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NET9_0_OR_GREATER;NET10_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-c:\Users\Egexx\Downloads\MSNMessenger\MSNClient\App.xaml
-11-1758061648
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\App.xaml
+141657870508
 
-20657128177
-207-56415199
-ChatWindow.xaml;GarticLobbyWindow.xaml;GarticPhoneLobbyWindow.xaml;GarticPhoneWindow.xaml;GarticWindow.xaml;GroupChatWindow.xaml;LoginWindow.xaml;MainWindow.xaml;PaintIoWindow.xaml;RockPaperScissorsWindow.xaml;TicTacToeWindow.xaml;
+21-828447093
+207-1767245713
+BlackjackLobbyWindow.xaml;BlackjackWindow.xaml;ChatWindow.xaml;GarticLobbyWindow.xaml;GarticPhoneLobbyWindow.xaml;GarticPhoneWindow.xaml;GarticWindow.xaml;GroupChatWindow.xaml;LoginWindow.xaml;MainWindow.xaml;PaintIoWindow.xaml;RockPaperScissorsWindow.xaml;ServerBrowserWindow.xaml;TicTacToeWindow.xaml;
 
 False
 

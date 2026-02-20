@@ -107,7 +107,7 @@ namespace MSNClient.Windows {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/MSNClient;V1.0.0.0;component/paintiowindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/MSNClient;component/paintiowindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\PaintIoWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

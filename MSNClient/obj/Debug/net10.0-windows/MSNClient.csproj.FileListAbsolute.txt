@@ -43,3 +43,9 @@ C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\RockPa
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\RockPaperScissorsWindow.g.cs
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\PaintIoWindow.baml
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\PaintIoWindow.g.cs
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\BlackjackLobbyWindow.baml
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\BlackjackWindow.baml
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\BlackjackLobbyWindow.g.cs
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\BlackjackWindow.g.cs
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\ServerBrowserWindow.baml
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\ServerBrowserWindow.g.cs

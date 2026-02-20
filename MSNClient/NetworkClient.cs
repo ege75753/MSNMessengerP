@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -104,34 +105,60 @@ namespace MSNClient
             _tcp = null; _stream = null;
         }
 
-        // ── LAN Discovery ──────────────────────────────────────────────────────
+        // ── LAN Discovery (UDP broadcast + subnet scan) ─────────────────────────
+        /// <summary>
+        /// Discovers MSN servers on the local network.
+        /// 1. Sends a UDP broadcast to 255.255.255.255:discoveryPort.
+        /// 2. Unicasts to every /24 subnet host in parallel.
+        /// 3. Collects responses for <paramref name="timeoutMs"/> ms.
+        /// </summary>
         public static async Task<List<ServerAnnounceData>> DiscoverServersAsync(
-            int discoveryPort = 443, int timeoutMs = 2000)
+            int discoveryPort = 443, int timeoutMs = 2500)
         {
             var results = new List<ServerAnnounceData>();
+            var seen = new HashSet<string>();
             try
             {
                 using var udp = new UdpClient();
                 udp.EnableBroadcast = true;
-                udp.Client.ReceiveTimeout = timeoutMs;
 
                 var msg = Encoding.UTF8.GetBytes("MSN_DISCOVER");
-                await udp.SendAsync(msg, msg.Length, "255.255.255.255", discoveryPort);
 
+                // 1. Broadcast
+                try { await udp.SendAsync(msg, msg.Length, "255.255.255.255", discoveryPort); } catch { }
+
+                // 2. Unicast to every host in each local /24 subnet.
+                //    Use SYNCHRONOUS Send() so the socket stays open for the receive loop below.
+                var localSubnets = NetworkInterface.GetAllNetworkInterfaces()
+                    .Where(i => i.OperationalStatus == OperationalStatus.Up
+                             && i.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                    .SelectMany(i => i.GetIPProperties().UnicastAddresses)
+                    .Where(a => a.Address.AddressFamily == AddressFamily.InterNetwork)
+                    .Select(a => a.Address.GetAddressBytes())
+                    .ToList();
+
+                foreach (var prefix in localSubnets)
+                    for (int h = 1; h <= 254; h++)
+                    {
+                        var target = $"{prefix[0]}.{prefix[1]}.{prefix[2]}.{h}";
+                        try { udp.Send(msg, msg.Length, target, discoveryPort); } catch { }
+                    }
+
+                // 3. Collect responses within the timeout window
                 var deadline = DateTime.UtcNow.AddMilliseconds(timeoutMs);
                 while (DateTime.UtcNow < deadline)
                 {
                     try
                     {
-                        udp.Client.ReceiveTimeout = (int)(deadline - DateTime.UtcNow).TotalMilliseconds;
+                        udp.Client.ReceiveTimeout = (int)Math.Max(50, (deadline - DateTime.UtcNow).TotalMilliseconds);
                         var result = await udp.ReceiveAsync();
                         var json = Encoding.UTF8.GetString(result.Buffer);
                         var info = JsonSerializer.Deserialize<ServerAnnounceData>(json);
                         if (info != null)
                         {
                             info.Host = result.RemoteEndPoint.Address.ToString();
-                            if (!results.Any(r => r.Host == info.Host && r.Port == info.Port))
-                                results.Add(info);
+                            var key = $"{info.Host}:{info.Port}";
+                            if (seen.Add(key)) results.Add(info);
                         }
                     }
                     catch { break; }
@@ -139,6 +166,56 @@ namespace MSNClient
             }
             catch { }
             return results;
+        }
+
+        // ── TCP-based server query (works over ngrok / WAN) ─────────────────────
+        /// <summary>
+        /// Queries a server via TCP — works over ngrok because it uses TCP only.
+        /// Sends ServerDiscovery, expects ServerAnnounce back. Returns null if unreachable.
+        /// </summary>
+        public static async Task<ServerAnnounceData?> QueryServerAsync(
+            string host, int port, int timeoutMs = 3000)
+        {
+            try
+            {
+                using var tcp = new TcpClient { NoDelay = true };
+                await tcp.ConnectAsync(host, port).WaitAsync(TimeSpan.FromMilliseconds(timeoutMs));
+                using var stream = tcp.GetStream();
+                stream.WriteTimeout = timeoutMs;
+                stream.ReadTimeout = timeoutMs;
+
+                // Send ServerDiscovery packet
+                var pkt = Packet.Create(PacketType.ServerDiscovery, new { });
+                var data = Encoding.UTF8.GetBytes(pkt.Serialize());
+                await stream.WriteAsync(data);
+
+                // Read response (newline-delimited JSON)
+                var buf = new byte[4096];
+                var sb = new StringBuilder();
+                var deadline = DateTime.UtcNow.AddMilliseconds(timeoutMs);
+                while (DateTime.UtcNow < deadline)
+                {
+                    stream.ReadTimeout = (int)Math.Max(50, (deadline - DateTime.UtcNow).TotalMilliseconds);
+                    int read = await stream.ReadAsync(buf);
+                    if (read == 0) break;
+                    sb.Append(Encoding.UTF8.GetString(buf, 0, read));
+                    var text = sb.ToString();
+                    int nl = text.IndexOf('\n');
+                    if (nl >= 0)
+                    {
+                        var line = text[..nl].Trim();
+                        var response = Packet.Deserialize(line);
+                        if (response?.Type == PacketType.ServerAnnounce)
+                        {
+                            var info = response.GetData<ServerAnnounceData>();
+                            if (info != null) { info.Host = host; info.Port = port; return info; }
+                        }
+                        break;
+                    }
+                }
+            }
+            catch { }
+            return null;
         }
     }
 }

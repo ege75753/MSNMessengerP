@@ -87,7 +87,12 @@ namespace MSNShared
         RockPaperScissors,
 
         // PaintIO
-        PaintIo
+        PaintIo,
+
+        // Blackjack
+        Blackjack,
+        BlackjackLobbyList,  // client requests lobby list
+        BlackjackLobbies     // server responds with lobbies
     }
 
     public enum UserStatus
@@ -675,6 +680,73 @@ namespace MSNShared
         public string Owner { get; set; } = ""; // Username, empty if neutral
         public int X { get; set; }
         public int Y { get; set; }
+    }
+
+    // ─── Blackjack ──────────────────────────────────────────────────────────────
+    public enum BlackjackMsgType
+    {
+        CreateLobby,
+        LobbyState,
+        JoinLobby,
+        LeaveLobby,
+        StartGame,
+        BettingPhase,     // server → all: place your bets
+        PlaceBet,         // client → server: my bet amount
+        PlayerAction,
+        HandUpdate,
+        DealerTurn,
+        RoundResult,
+        NextRound,
+    }
+
+    public enum BjAction
+    {
+        Hit,
+        Stand
+    }
+
+    public class BjCard
+    {
+        public string Rank { get; set; } = "";  // "A","2".."10","J","Q","K"
+        public string Suit { get; set; } = "";  // "♠","♥","♦","♣"
+        public bool Hidden { get; set; }        // dealer hole card
+    }
+
+    public class BlackjackPacket
+    {
+        public BlackjackMsgType Msg { get; set; }
+        public string LobbyId { get; set; } = "";
+        public string From { get; set; } = "";
+        // Lobby
+        public string LobbyName { get; set; } = "";
+        public int MaxPlayers { get; set; } = 6;
+        public string Host { get; set; } = "";
+        public bool GameStarted { get; set; }
+        public List<string> Players { get; set; } = new();
+        public Dictionary<string, string> PlayerDisplayNames { get; set; } = new();
+        public Dictionary<string, int> Scores { get; set; } = new();
+        public string CurrentPlayer { get; set; } = "";
+        public Dictionary<string, List<BjCard>> Hands { get; set; } = new();
+        public List<BjCard> DealerHand { get; set; } = new();
+        public BjAction Action { get; set; }
+        public Dictionary<string, string> Results { get; set; } = new();
+        // Betting
+        public Dictionary<string, int> Balances { get; set; } = new();
+        public Dictionary<string, int> Bets { get; set; } = new();
+        public int Pot { get; set; }
+        public int BetAmount { get; set; }
+        public string Message { get; set; } = "";
+    }
+
+    public class BlackjackLobbyInfo
+    {
+        public string LobbyId { get; set; } = "";
+        public string LobbyName { get; set; } = "";
+        public string Host { get; set; } = "";
+        public string HostDisplayName { get; set; } = "";
+        public int PlayerCount { get; set; }
+        public int MaxPlayers { get; set; }
+        public bool GameStarted { get; set; }
     }
 }
 
