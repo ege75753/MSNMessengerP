@@ -112,7 +112,7 @@
                      FontFamily="Tahoma" FontSize="11"
                      BorderBrush="#8CB4E0" BorderThickness="1,1,1,0"
                      AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
-                     KeyDown="Input_KeyDown" TextChanged="Input_TextChanged"/>
+                     PreviewKeyDown="Input_KeyDown" TextChanged="Input_TextChanged"/>
 
         <!-- Send bar -->
         <Border Grid.Row="6" Background="#E0ECFA" BorderBrush="#8CB4E0" BorderThickness="0,0,0,0" Padding="4,3">
@@ -121,7 +121,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="SendStatus" FontSize="9" Foreground="#888" VerticalAlignment="Center" Margin="4,0"/>
+                <TextBlock x:Name="SendStatus" FontSize="9" Foreground="#888" VerticalAlignment="Center" Margin="4,0" Text="Press Enter to send · Shift+Enter for new line"/>
                 <Button Grid.Column="1" Style="{StaticResource MSNBtnPrimary}" Content="Send"
                         Padding="18,3" Click="Send_Click" FontWeight="Bold"/>
             </Grid>

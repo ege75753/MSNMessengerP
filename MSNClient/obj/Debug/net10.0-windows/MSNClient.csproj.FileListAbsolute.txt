@@ -49,3 +49,7 @@ C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\Blackj
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\BlackjackWindow.g.cs
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\ServerBrowserWindow.baml
 C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\ServerBrowserWindow.g.cs
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\UnoLobbyWindow.baml
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\UnoWindow.baml
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\UnoLobbyWindow.g.cs
+C:\Users\Egexx\Downloads\MSNMessenger\MSNClient\obj\Debug\net10.0-windows\UnoWindow.g.cs

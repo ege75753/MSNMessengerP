@@ -20,6 +20,7 @@ namespace MSNServer
         private readonly RpsManager _rps;
         private readonly PaintIoManager _paintIo;
         private readonly BlackjackManager _blackjack;
+        private readonly UnoManager _uno;
         private TcpListener? _listener;
         private UdpClient? _discoveryUdp;
         private readonly ConcurrentDictionary<string, ConnectedClient> _clients = new();
@@ -41,6 +42,7 @@ namespace MSNServer
             _rps = new RpsManager(_getClient);
             _paintIo = new PaintIoManager(_getClient);
             _blackjack = new BlackjackManager(_getClient);
+            _uno = new UnoManager(_getClient);
         }
 
         private ConnectedClient? _getClient(string username) => _clients.TryGetValue(username, out var c) ? c : null;
@@ -270,6 +272,16 @@ namespace MSNServer
                 case PacketType.BlackjackLobbyList when client.IsAuthenticated:
                     var bjLobbies = _blackjack.GetLobbies();
                     await client.SendAsync(Packet.Create(PacketType.BlackjackLobbies, bjLobbies));
+                    break;
+
+                case PacketType.Uno when client.IsAuthenticated:
+                    var unoPkt = packet.GetData<UnoPacket>();
+                    if (unoPkt != null) await _uno.HandleAsync(client, unoPkt);
+                    break;
+
+                case PacketType.UnoLobbyList when client.IsAuthenticated:
+                    var unoLobbies = _uno.GetLobbies();
+                    await client.SendAsync(Packet.Create(PacketType.UnoLobbies, unoLobbies));
                     break;
 
                 default:
@@ -881,6 +893,7 @@ namespace MSNServer
                 await _rps.OnDisconnect(client.Username);
                 await _paintIo.OnDisconnect(client.Username);
                 await _blackjack.OnDisconnect(client.Username);
+                await _uno.OnDisconnect(client.Username);
 
                 // Broadcast offline
                 await BroadcastToAllAsync(Packet.Create(PacketType.PresenceBroadcast, new PresenceData

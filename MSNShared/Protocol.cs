@@ -92,7 +92,12 @@ namespace MSNShared
         // Blackjack
         Blackjack,
         BlackjackLobbyList,  // client requests lobby list
-        BlackjackLobbies     // server responds with lobbies
+        BlackjackLobbies,    // server responds with lobbies
+
+        // Uno
+        Uno,             // all uno game packets
+        UnoLobbyList,    // client requests list of uno lobbies
+        UnoLobbies       // server responds with uno lobbies
     }
 
     public enum UserStatus
@@ -739,6 +744,96 @@ namespace MSNShared
     }
 
     public class BlackjackLobbyInfo
+    {
+        public string LobbyId { get; set; } = "";
+        public string LobbyName { get; set; } = "";
+        public string Host { get; set; } = "";
+        public string HostDisplayName { get; set; } = "";
+        public int PlayerCount { get; set; }
+        public int MaxPlayers { get; set; }
+        public bool GameStarted { get; set; }
+    }
+
+    // ─── Uno ───────────────────────────────────────────────────────────────────
+    public enum UnoMsgType
+    {
+        CreateLobby,     // client -> server
+        LobbyState,      // server -> all in lobby
+        JoinLobby,       // client -> server
+        LeaveLobby,      // client -> server
+        StartGame,       // host -> server
+        GameState,       // server -> clients
+        PlayCard,        // client -> server
+        DrawCard,        // client -> server
+        ChooseColor,     // client -> server (after playing wild)
+        GameOver         // server -> clients
+    }
+
+    public enum UnoColor
+    {
+        None,   // For wilds before color is chosen
+        Red,
+        Yellow,
+        Green,
+        Blue
+    }
+
+    public enum UnoValue
+    {
+        Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine,
+        Skip,
+        Reverse,
+        DrawTwo,
+        Wild,
+        WildDrawFour
+    }
+
+    public class UnoCard
+    {
+        public UnoColor Color { get; set; }
+        public UnoValue Value { get; set; }
+        public string InstanceId { get; set; } = Guid.NewGuid().ToString("N")[..8];
+    }
+
+    public class UnoPlayer
+    {
+        public string Username { get; set; } = "";
+        public string DisplayName { get; set; } = "";
+        public int CardCount { get; set; }
+        // Only sent to the player themselves, null for others to prevent cheating
+        public List<UnoCard>? Hand { get; set; }
+    }
+
+    public class UnoPacket
+    {
+        public UnoMsgType Msg { get; set; }
+        public string LobbyId { get; set; } = "";
+        public string From { get; set; } = "";
+
+        // Lobby info
+        public string LobbyName { get; set; } = "";
+        public int MaxPlayers { get; set; } = 10;
+        public string Host { get; set; } = "";
+        public bool GameStarted { get; set; }
+        public List<string> Players { get; set; } = new();
+        public Dictionary<string, string> PlayerDisplayNames { get; set; } = new();
+
+        // Game State info
+        public List<UnoPlayer> GamePlayers { get; set; } = new();
+        public UnoCard? TopCard { get; set; }
+        public UnoColor CurrentColor { get; set; }
+        public string CurrentTurn { get; set; } = "";
+        public bool IsClockwise { get; set; } = true;
+
+        // Action info
+        public UnoCard? PlayedCard { get; set; }
+        public UnoColor ChosenColor { get; set; }
+
+        public string Message { get; set; } = "";
+        public string Winner { get; set; } = "";
+    }
+
+    public class UnoLobbyInfo
     {
         public string LobbyId { get; set; } = "";
         public string LobbyName { get; set; } = "";

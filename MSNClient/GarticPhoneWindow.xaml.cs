@@ -209,10 +209,66 @@ namespace MSNClient
                             ? new SolidColorBrush(Colors.Red)
                             : new SolidColorBrush(Color.FromRgb(255, 215, 0));
                     });
+                    if (t == 0)
+                    {
+                        // Time's up — auto-submit if not already submitted
+                        Dispatcher.Invoke(AutoSubmitCurrentPhase);
+                        return;
+                    }
                     try { await Task.Delay(1000, cts.Token); }
                     catch { return; }
                 }
             });
+        }
+
+        private async void AutoSubmitCurrentPhase()
+        {
+            if (_submitted) return;
+
+            // Drawing phase
+            if (DrawPanel.Visibility == Visibility.Visible)
+            {
+                _submitted = true;
+                SubmitDrawingBtn.IsEnabled = false;
+                var base64 = RenderCanvasToBase64();
+                await _state.Net.SendAsync(Packet.Create(PacketType.GarticPhone, new GarticPhonePacket
+                {
+                    Msg = GarticPhoneMsgType.SubmitDrawing,
+                    LobbyId = _lobbyId,
+                    DrawingBase64 = base64
+                }));
+                ShowPanel("waiting");
+            }
+            // Write phase
+            else if (WritePanel.Visibility == Visibility.Visible)
+            {
+                var phrase = PhraseBox.Text.Trim();
+                if (string.IsNullOrEmpty(phrase)) phrase = "(no answer)";
+                _submitted = true;
+                SubmitPhraseBtn.IsEnabled = false;
+                await _state.Net.SendAsync(Packet.Create(PacketType.GarticPhone, new GarticPhonePacket
+                {
+                    Msg = GarticPhoneMsgType.SubmitPhrase,
+                    LobbyId = _lobbyId,
+                    Description = phrase
+                }));
+                ShowPanel("waiting");
+            }
+            // Describe phase
+            else if (DescribePanel.Visibility == Visibility.Visible)
+            {
+                var text = DescriptionBox.Text.Trim();
+                if (string.IsNullOrEmpty(text)) text = "(no answer)";
+                _submitted = true;
+                SubmitDescriptionBtn.IsEnabled = false;
+                await _state.Net.SendAsync(Packet.Create(PacketType.GarticPhone, new GarticPhonePacket
+                {
+                    Msg = GarticPhoneMsgType.SubmitDescription,
+                    LobbyId = _lobbyId,
+                    Description = text
+                }));
+                ShowPanel("waiting");
+            }
         }
 
         // ─── Chain Reveal (Gartic Phone chat-bubble style) ───

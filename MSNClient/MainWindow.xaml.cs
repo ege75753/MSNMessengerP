@@ -991,12 +991,15 @@ namespace MSNClient
             paint.Click += (s, args) => new Windows.PaintIoWindow().Show();
             var blackjack = new MenuItem { Header = "🃏 Blackjack" };
             blackjack.Click += (s, args) => OpenBlackjackLobby();
+            var uno = new MenuItem { Header = "🔴 Uno" };
+            uno.Click += (s, args) => OpenUnoLobby();
 
             cm.Items.Add(ttt);
             cm.Items.Add(gartic);
             cm.Items.Add(phone);
             cm.Items.Add(paint);
             cm.Items.Add(blackjack);
+            cm.Items.Add(uno);
             cm.IsOpen = true;
         }
 
@@ -1039,6 +1042,11 @@ namespace MSNClient
         private void OpenBlackjackLobby()
         {
             new BlackjackLobbyWindow { Owner = this }.Show();
+        }
+
+        private void OpenUnoLobby()
+        {
+            new UnoLobbyWindow { Owner = this }.Show();
         }
 
         private void Menu_File(object sender, RoutedEventArgs e)

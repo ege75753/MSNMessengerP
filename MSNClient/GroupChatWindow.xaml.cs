@@ -55,9 +55,54 @@ namespace MSNClient
                 {
                     var contact = _state.GetContact(m);
                     var isMe = m == _state.MyUsername;
-                    var display = isMe ? $"👤 {_state.MyDisplayName} (you)" :
-                        contact != null ? $"{contact.AvatarEmoji} {contact.DisplayName}" : $"👤 {m}";
-                    MembersList.Items.Add(display);
+                    var displayName = isMe ? $"{_state.MyDisplayName} (you)" :
+                        contact != null ? contact.DisplayName : m;
+                    var avatar = isMe ? _state.MyAvatarEmoji : (contact?.AvatarEmoji ?? "🙂");
+                    var username = m;
+
+                    // Build a row: circular avatar + name
+                    var row = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 2, 0, 2) };
+
+                    var avatarBorder = new Border
+                    {
+                        Width = 22,
+                        Height = 22,
+                        CornerRadius = new CornerRadius(11),
+                        Background = isMe ? new SolidColorBrush(Color.FromRgb(200, 230, 255)) : new SolidColorBrush(Color.FromRgb(220, 240, 200)),
+                        Margin = new Thickness(0, 0, 5, 0),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        ClipToBounds = true
+                    };
+                    avatarBorder.Child = new TextBlock { Text = avatar, FontSize = 11, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+
+                    // Async profile picture load
+                    _ = Task.Run(async () =>
+                    {
+                        var img = await App.FileTransfer.GetProfilePictureAsync(isMe ? _state.MyUsername : username, 22);
+                        if (img != null)
+                            Dispatcher.Invoke(() =>
+                            {
+                                avatarBorder.Child = new System.Windows.Controls.Image
+                                {
+                                    Source = img,
+                                    Width = 22,
+                                    Height = 22,
+                                    Stretch = System.Windows.Media.Stretch.UniformToFill
+                                };
+                            });
+                    });
+
+                    row.Children.Add(avatarBorder);
+                    row.Children.Add(new TextBlock
+                    {
+                        Text = displayName,
+                        FontSize = 10,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        TextTrimming = TextTrimming.CharacterEllipsis,
+                        MaxWidth = 100
+                    });
+
+                    MembersList.Items.Add(new ListBoxItem { Content = row, Padding = new Thickness(2, 1, 2, 1) });
                 }
                 GroupDescText.Text = string.IsNullOrEmpty(_group.Description) ? $"Group Chat — {_group.Members.Count} members" : _group.Description;
             });
@@ -110,9 +155,29 @@ namespace MSNClient
                 CornerRadius = new CornerRadius(14),
                 Background = isMe ? new SolidColorBrush(Color.FromRgb(200, 230, 255)) : new SolidColorBrush(Color.FromRgb(220, 240, 200)),
                 Margin = new Thickness(0, 0, 6, 0),
-                VerticalAlignment = VerticalAlignment.Top
+                VerticalAlignment = VerticalAlignment.Top,
+                ClipToBounds = true
             };
-            avatarBorder.Child = new TextBlock { Text = avatar, FontSize = 14, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+            var emojiText = new TextBlock { Text = avatar, FontSize = 14, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+            avatarBorder.Child = emojiText;
+
+            // Try to load profile picture asynchronously
+            var senderUsername = sender;
+            _ = Task.Run(async () =>
+            {
+                var img = await App.FileTransfer.GetProfilePictureAsync(isMe ? _state.MyUsername : senderUsername, 28);
+                if (img != null)
+                    Dispatcher.Invoke(() =>
+                    {
+                        avatarBorder.Child = new System.Windows.Controls.Image
+                        {
+                            Source = img,
+                            Width = 28,
+                            Height = 28,
+                            Stretch = System.Windows.Media.Stretch.UniformToFill
+                        };
+                    });
+            });
 
             var textStack = new StackPanel();
             var headerRow = new StackPanel { Orientation = Orientation.Horizontal };

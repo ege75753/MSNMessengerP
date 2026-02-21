@@ -39,5 +39,27 @@
       "279ee164906b"
     ],
     "CreatedAt": "2026-02-19T17:36:00.5750455Z"
+  },
+  "egg3": {
+    "Username": "egg3",
+    "PasswordHash": "$2a$11$EczU89K6asYnrbHoGvbsHOT.kJZ2Rqq2nM9Q3CCGohDIjsvwWDR4C",
+    "DisplayName": "egg3",
+    "Email": "",
+    "AvatarEmoji": "\uD83D\uDE42",
+    "ProfilePicFileId": "",
+    "Contacts": [],
+    "Groups": [],
+    "CreatedAt": "2026-02-21T08:26:36.7691821Z"
+  },
+  "egg4": {
+    "Username": "egg4",
+    "PasswordHash": "$2a$11$EKCJLqDX5uxRa5Ik3pdVSu4spBbwy3/LhhNWOmBeS.lU4SYLazVWa",
+    "DisplayName": "egg4",
+    "Email": "",
+    "AvatarEmoji": "\uD83D\uDE42",
+    "ProfilePicFileId": "",
+    "Contacts": [],
+    "Groups": [],
+    "CreatedAt": "2026-02-21T08:26:46.3389021Z"
   }
 }
