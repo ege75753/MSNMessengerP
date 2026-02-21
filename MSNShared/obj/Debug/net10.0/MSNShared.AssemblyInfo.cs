@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MSNShared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+36c574868b095dd210bf3e3f6316c625216cc441")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb3307f6acda6ee2c344b9a4f92b0e095b291363")]
 [assembly: System.Reflection.AssemblyProductAttribute("MSNShared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MSNShared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -147,7 +147,7 @@ namespace MSNClient {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/MSNClient;component/serverbrowserwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/MSNClient;V1.0.0.0;component/serverbrowserwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\ServerBrowserWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

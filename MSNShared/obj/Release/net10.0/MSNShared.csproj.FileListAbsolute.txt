@@ -1,0 +1,12 @@
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\bin\Release\net10.0\MSNShared.deps.json
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\bin\Release\net10.0\MSNShared.dll
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\bin\Release\net10.0\MSNShared.pdb
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Release\net10.0\MSNShared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Release\net10.0\MSNShared.AssemblyInfoInputs.cache
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Release\net10.0\MSNShared.AssemblyInfo.cs
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Release\net10.0\MSNShared.csproj.CoreCompileInputs.cache
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Release\net10.0\MSNShared.sourcelink.json
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Release\net10.0\MSNShared.dll
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Release\net10.0\refint\MSNShared.dll
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Release\net10.0\MSNShared.pdb
+C:\Users\Egexx\Downloads\MSNMessenger\MSNShared\obj\Release\net10.0\ref\MSNShared.dll
